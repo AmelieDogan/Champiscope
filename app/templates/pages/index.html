@@ -1,76 +1,21 @@
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Champiscope - Accueil</title>
-    <link rel="stylesheet" href="../static/styles.css">
-</head>
-<body>
+{% extends "partials/conteneur.html" %}
 
-    <!-- Header -->
-    <header>
-        <div class="logo">🍄 Champiscope</div>
-        <nav>
-            <ul>
-                <li><a href="#">Accueil</a></li>
-                <li><a href="#">Explorer</a></li>
-                <li><a href="#">Quiz</a></li>
-                <li><a href="#">Connexion</a></li>
-            </ul>
-        </nav>
-    </header>
+{% block contenu%}
 
-    <!-- Section d'Introduction -->
-    <section class="intro">
-        <h1>Explorez la diversité des champignons en France</h1>
-        <p>Découvrez leurs caractéristiques, visualisez leurs répartitions et testez vos connaissances.</p>
-        <input type="text" placeholder="Rechercher un champignon...">
-        <button>Rechercher</button>
-    </section>
+<h2>Bienvenue sur Champiscope</h2>
+<p>Découvrez le monde fascinant des <a href="#">champignons</a> à travers une approche botanique et historique.</p>
 
-    <!-- Présentation des fonctionnalités -->
-    <section class="features">
-        <div class="feature-card">
-            <h2>📍 Carte interactive</h2>
-            <p>Explorez les observations de champignons en France.</p>
-        </div>
-        <div class="feature-card">
-            <h2>📊 Visualisations</h2>
-            <p>Comprenez les tendances et caractéristiques des espèces.</p>
-        </div>
-        <div class="feature-card">
-            <h2>📝 Quiz éducatif</h2>
-            <p>Testez vos connaissances sur les champignons.</p>
-        </div>
-    </section>
+<button class="btn">Explorer</button>
 
-    <!-- Catalogue de champignons -->
-    <section class="catalog">
-        <h2>Quelques champignons à découvrir</h2>
-        <div class="grid">
-            <div class="card">
-                <img src="https://via.placeholder.com/150" alt="Amanite tue-mouches">
-                <h3>Amanite tue-mouches</h3>
-                <button>Voir la fiche</button>
-            </div>
-            <div class="card">
-                <img src="https://via.placeholder.com/150" alt="Cèpe de Bordeaux">
-                <h3>Cèpe de Bordeaux</h3>
-                <button>Voir la fiche</button>
-            </div>
-            <div class="card">
-                <img src="https://via.placeholder.com/150" alt="Morille">
-                <h3>Morille</h3>
-                <button>Voir la fiche</button>
-            </div>
-        </div>
-    </section>
+<table>
+    <tr>
+        <th>Nom</th>
+        <th>Famille</th>
+    </tr>
+    <tr>
+        <td>Amanita muscaria</td>
+        <td>Amanitaceae</td>
+    </tr>
+</table>
 
-    <!-- Footer -->
-    <footer>
-        <p>© 2025 Champiscope - Tous droits réservés</p>
-    </footer>
-
-</body>
-</html>
+{%endblock%}

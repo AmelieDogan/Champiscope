@@ -1,0 +1,205 @@
+:root{
+    --texture-papier: url(white-paperboard.png);
+    /*Teintes beiges*/
+    --papyrus: #f4f1e6;
+    --parchemin: #e9e1c9;
+    --cepe-veloute: #dac7a2;
+    --bolet-fauve: #b8a077;
+    --pied-de-mouton: #a89274;
+    /*Teintes vertes*/
+    --lichen-tendre: #b3a374;
+    --mousse-ancienne: #8a7c50;
+    --foret-profonde: #5f573f;
+    /*Teintes rouges*/
+    --chapeau-d-amanite: #ad4e3b;
+    --spores-pourpres: #7c332a;
+    /*Teintes marron*/
+    --bois-de-noyer: #5c3d2e;
+    --ecorce-de-chene: #3e2f1d;
+}
+
+/* ----- Styles généraux ----- */
+body {
+    background-color: var(--papyrus);
+    color: var(--ecorce-de-chene);
+    font-family: "Garamond", "Times New Roman", serif;
+    line-height: 1.6;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* ----- Titres ----- */
+h1, h2, h3 {
+    font-family: "Baskerville", "Garamond", serif;
+    color: var(--foret-profonde);
+}
+
+h2 {
+    font-size: 2em;
+}
+
+/* ----- Liens ----- */
+a {
+    color: var(--foret-profonde);
+    text-decoration: none;
+    border-bottom: 1px dotted var(--foret-profonde);
+    transition: color 0.3s ease-in-out;
+}
+
+a:hover {
+    color: var(--mousse-ancienne);
+    border-bottom: 1px dotted var(--mousse-ancienne);
+}
+
+/* ----- Header (Bannière du site) ----- */
+header {
+    text-align: center;
+    padding: 30px 0;
+    width: 100%;
+    background-color: var(--parchemin);
+    background-image: var(--texture-papier);
+    border-bottom: 5px solid var(--ecorce-de-chene); /* Effet de séparation */
+    box-shadow: 0 4px 6px var(--bolet-fauve);
+}
+
+header h1 {
+    font-family: "Baskerville", "Garamond", serif;
+    font-size: 3em;
+    color: var(--ecorce-de-chene);
+    text-transform: uppercase;
+    text-shadow: 1px 1px 2px var(--bolet-fauve);
+    letter-spacing: 2px;
+    border-bottom: 3px solid var(--ecorce-de-chene);
+}
+
+nav {
+    margin-top: 10px;
+}
+
+nav a {
+    color: var(--bois-de-noyer);
+    font-size: 1.2em;
+    font-weight: bold;
+    text-decoration: none;
+    padding: 10px 15px;
+    border-bottom: 2px solid transparent;
+    transition: all 0.3s ease-in-out;
+    text-transform: uppercase;
+    position: relative;
+}
+
+nav a:hover {
+    color: var(--ecorce-de-chene);
+    border-bottom: 2px solid var(--ecorce-de-chene);
+}
+
+/* ----- Conteneur principal ----- */
+.container {
+    text-align: center;
+    width: 70%;
+    margin: 20px;
+    padding: 20px;
+    background-color: var(--parchemin);
+    background-image: var(--texture-papier);
+    box-shadow: 5px 5px 15px var(--bolet-fauve);
+    border: 1px solid var(--cepe-veloute);
+}
+
+/* ----- Boutons ----- */
+button, .btn {
+    background-color: var(--mousse-ancienne);
+    color: var(--papyrus);
+    border: none;
+    padding: 10px 15px;
+    font-size: 1.2em;
+    font-family: "Garamond", serif;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: all 0.3s ease-in-out;
+}
+
+button:hover, .btn:hover {
+    background-color: var(--foret-profonde);
+}
+
+/* ----- Tables ----- */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+th, td {
+    border: 1px solid var(--pied-de-mouton);
+    padding: 10px;
+    text-align: left;
+}
+
+th {
+    font-weight: bold;
+}
+
+/* ----- Inputs et formulaires ----- */
+input, textarea, select {
+    background-color: var(--papyrus);
+    border: 1px solid var(--cepe-veloute);
+    padding: 8px;
+    font-size: 1em;
+    font-family: "Garamond", serif;
+}
+
+input:focus, textarea:focus, select:focus {
+    border-color: var(--bolet-fauve);
+    outline: none;
+}
+
+/* ----- Illustrations et images ----- */
+img {
+    max-width: 100%;
+    height: auto;
+    border: 1px solid var(--bolet-fauve);
+    padding: 5px;
+    background-color: var(--cepe-veloute);
+}
+
+.figcaption {
+    font-size: 0.9em;
+    font-style: italic;
+    color: var(--pied-de-mouton);
+    text-align: center;
+}
+
+/* ----- Footer (Pied de page inspiré des livres anciens) ----- */
+footer {
+    background-color: var(--ecorce-de-chene);
+    color: var(--papyrus);
+    text-align: center;
+    width: 100%;
+    padding-top: 15px;
+    padding-bottom: 20px;
+    font-style: italic;
+}
+
+footer p {
+    margin: 5px 0;
+}
+
+.footer-liens {
+    margin-top: 10px;
+}
+
+.footer-liens a {
+    color: var(--papyrus);
+    font-size: 1.2em;
+    margin: 0 10px;
+    transition: color 0.3s ease-in-out;
+    border-bottom: none;
+}
+
+.footer-liens a:hover {
+    color: var(--cepe-veloute);
+    border-bottom: none;
+}
