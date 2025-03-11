@@ -86,6 +86,8 @@ class Referentiel(db.Model):
     referentiels_iconographie = db.relationship("Referentiel", back_populates="iconographie", uselist=False)
     referentiels_taxon_superieur = db.relationship("Referentiel", back_populates="taxon_superieur", uselist=False)
 
+    def __repr__(self):
+        return '<Referentiel %r>' % (self.name) 
 
 class Surface(db.Model):
     __tablename__="surface"
@@ -94,6 +96,8 @@ class Surface(db.Model):
 
     #Relation entre surface et referentiel via surface_champi
     surfaces = db.relationship("surface", secondary=surface_champi, back_populates="referentiel")
+    def __repr__(self):
+        return '<Surface %r>' % (self.name) 
 
 class Zone(db.Model):
     __tablename__="zone"
@@ -109,6 +113,9 @@ class Zone(db.Model):
     #Relation entre zone et referentiel via surface_champi
     zones_couleur = db.relationship("zone", secondary=couleur_champi, back_populates="referentiel")
 
+    def __repr__(self):
+        return '<Zone %r>' % (self.name) 
+
 class Forme(db.Model):
     __tablename__="forme"
     id = db.Column(db.Integer, primary_key = True, unique=True)
@@ -117,10 +124,19 @@ class Forme(db.Model):
     #Relation entre zone et referentiel via surface_champi
     formes_champis = db.relationship("forme", secondary=forme_champi, back_populates="referentiel")
 
+    def __repr__(self):
+        return '<Forme %r>' % (self.name) 
+
 class Couleur(db.Model):
     __tablename__="couleur"
     id = db.Column(db.Integer, primary_key = True, unique=True)
     couleur = db.Column(db.String(250))
+
+    #Relation de couleur à référentiel via couleur_champi
+    couleurs = db.relationship("couleur", secondary=couleur_champi, back_populates="referentiel"
+                               )
+    def __repr__(self):
+        return '<Couleur %r>' % (self.name) 
 
 class TypeLamelle(db.Model):
     __tablename__="type_lamelle"
@@ -129,6 +145,9 @@ class TypeLamelle(db.Model):
 
     #Relation entre type lamelle et referentiel via type lamelle champi
     types_lamelles = db.relationship("type_lamelle", secondary=type_lamelle_champi, back_populates="referentiel")
+
+    def __repr__(self):
+        return '<TypeLamelle %r>' % (self.name) 
 
 class ModeInsertion(db.Model):
     __tablename__="mode_insertion"
@@ -139,6 +158,9 @@ class ModeInsertion(db.Model):
     #Relation entre mode insertion et referentiel via insertion pied chapeau
     mode_insertions = db.relationship("mode_insertion", secondary=insertion_pied_chapeau, back_populates="referentiel")
 
+    def __repr__(self):
+        return '<ModeInsertion %r>' % (self.name) 
+
 class Danger(db.Model):
     __tablename__="danger"
     id = db.Column(db.Integer, primary_key = True, unique=True)
@@ -148,6 +170,9 @@ class Danger(db.Model):
     #Relation entre danger et referentiel via liste_rouge
     dangers = db.relationship("danger", secondary=liste_rouge, back_populates="referentiel")
 
+    def __repr__(self):
+        return '<Danger %r>' % (self.name) 
+
 class Iconographie(db.Model):
     __tablename__="iconographie"
     id = db.Column(db.Integer, primary_key = True, unique=True)
@@ -156,20 +181,28 @@ class Iconographie(db.Model):
     #Foreign key
     taxref_id = db.Column(db.Integer, db.ForeignKey('referentiel.taxref_id'))
 
+    def __repr__(self):
+        return '<Iconographie %r>' % (self.name) 
+
 class Habitat(db.Model):
     __tablename__="habitat"
     id = db.Column(db.Integer, primary_key = True, unique=True)
     nom = db.Column(db.String(250))
     definition = db.Column(db.String(250))
 
+    def __repr__(self):
+        return '<Habitat %r>' % (self.name) 
+
 class Milieu(db.Model):
     __tablename__="milieu"
     id = db.Column(db.Integer, primary_key = True, unique=True)
     milieu = db.Column(db.String(250))
 
-    
     #Relation entre milieu et referentiel via surface_champi
     milieux = db.relationship("milieu", secondary=milieu_champi, back_populates="referentiel")
+
+    def __repr__(self):
+        return '<Milieu %r>' % (self.name) 
 
 class Presence(db.Model):
     __tablename__="presence"
@@ -192,6 +225,9 @@ class Presence(db.Model):
     #Foreign key
     taxref_id = db.Column(db.Integer, db.ForeignKey('referentiel.taxref_id'))
 
+    def __repr__(self):
+        return '<Presence %r>' % (self.name) 
+
 class ObservationHumaine(db.Model):
     __tablename__="observation_humaine"
     id = db.Column(db.Integer, primary_key=True, unique=True)
@@ -203,6 +239,9 @@ class ObservationHumaine(db.Model):
     identifie_par = db.Column(db.String(250))
     #Foreign key
     taxref_id = db.Column(db.Integer, db.ForeignKey('referentiel.taxref_id'))
+
+    def __repr__(self):
+        return '<ObservationHumaine %r>' % (self.name) 
 
 class MoisPousse(db.Model):
     __tablename__="mois_pousse"
@@ -220,6 +259,9 @@ class MoisPousse(db.Model):
     decembre = db.Column(db.Boolean)
     #Foreign key
     taxref_id = db.Column(db.Integer, db.ForeignKey('referentiel.taxref_id'))
+
+    def __repr__(self):
+        return '<MoisPousse %r>' % (self.name) 
 
 class DescriptionChampignon(db.Model):
     __tablename__="description_champignon"
@@ -241,3 +283,6 @@ class DescriptionChampignon(db.Model):
     commentaires = db.Column(db.String(250))
      #Foreign key
     taxref_id = db.Column(db.Integer, db.ForeignKey('referentiel.taxref_id'))
+
+    def __repr__(self):
+        return '<DescriptionChampignon %r>' % (self.name) 
