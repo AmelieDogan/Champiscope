@@ -1,7 +1,5 @@
 from ..app import app, db
 
-#Relations
-
 #Tables de relation
 
 surface_champi = db.Table(
@@ -37,14 +35,6 @@ insertion_pied_chapeau = db.Table(
     db.Column('mode_insertion_id', db.Integer, db.ForeignKey('mode_insertion.id'))
 )
 
-liste_rouge = db.Table(
-    "liste_rouge",
-    db.Column('taxref_id', db.Integer, db.ForeignKey('referentiel.taxref_id')),
-    db.Column('id_danger', db.Integer, db.ForeignKey('danger.id')),
-    db.Column('tendance', db.String(250)),
-    db.Column('annee', db.Integer)
-    )
-
 confusion = db.Table(
     db.Column('taxref_id', db.Integer, db.ForeignKey('referentiel.taxref_id')),
     db.Column('confusion_id', db.Integer, db.ForeignKey('referentiel.taxref_id'))
@@ -77,14 +67,14 @@ class Referentiel(db.Model):
     habitat_id = db.Column(db.Integer, db.ForeignKey('habitat.id'))
 
     #Relations entre Referentiel et les autres tables PAS de relation
-    referentiels_mois_pousse = db.relationship("Referentiel", back_populates="mois_pousse", uselist=False)
-    referentiels_description_champignon = db.relationship("Referentiel", back_populates="description_champigon", uselist=False)
-    referentiels_observation_humaine = db.relationship("Referentiel", back_populates="observation_humaine", uselist=False)
-    referentiels_presence = db.relationship("Referentiel", back_populates="presence", uselist=False)
-    referentiels_habitat = db.relationship("Referentiel", back_populates="habitat", uselist=False)
-    referentiels_confusion = db.relationship("Referentiel", back_populates="confusion", uselist=False)
-    referentiels_iconographie = db.relationship("Referentiel", back_populates="iconographie", uselist=False)
-    referentiels_taxon_superieur = db.relationship("Referentiel", back_populates="taxon_superieur", uselist=False)
+    referentiels_mois_pousse = db.relationship("Referentiel", backref="mois_pousse", uselist=False)
+    referentiels_description_champignon = db.relationship("Referentiel", backref="description_champigon", uselist=False)
+    referentiels_observation_humaine = db.relationship("Referentiel", backref="observation_humaine", uselist=False)
+    referentiels_presence = db.relationship("Referentiel", backref="presence", uselist=False)
+    referentiels_habitat = db.relationship("Referentiel", backref="habitat", uselist=False)
+    referentiels_confusion = db.relationship("Referentiel", backref="confusion", uselist=False)
+    referentiels_iconographie = db.relationship("Referentiel", backref="iconographie", uselist=False)
+    referentiels_taxon_superieur = db.relationship("Referentiel", backref="taxon_superieur", uselist=False)
 
     def __repr__(self):
         return '<Referentiel %r>' % (self.name) 
@@ -95,7 +85,7 @@ class Surface(db.Model):
     surface = db.Column(db.String(250))
 
     #Relation entre surface et referentiel via surface_champi
-    surfaces = db.relationship("surface", secondary=surface_champi, back_populates="referentiel")
+    surfaces = db.relationship("Surface", secondary=surface_champi, backref="referentiel")
     def __repr__(self):
         return '<Surface %r>' % (self.name) 
 
@@ -105,13 +95,13 @@ class Zone(db.Model):
     zone = db.Column(db.String(250))
 
     #Relation entre zone et referentiel via surface_champi
-    zones_surface = db.relationship("zone", secondary=surface_champi, back_populates="referentiel")
+    zones_surface = db.relationship("Zone", secondary=surface_champi, backref="referentiel")
 
     #Relation entre zone et referentiel via surface_champi
-    zones_forme = db.relationship("zone", secondary=forme_champi, back_populates="referentiel")
+    zones_forme = db.relationship("Zone", secondary=forme_champi, backref="referentiel")
 
     #Relation entre zone et referentiel via surface_champi
-    zones_couleur = db.relationship("zone", secondary=couleur_champi, back_populates="referentiel")
+    zones_couleur = db.relationship("Zone", secondary=couleur_champi, backref="referentiel")
 
     def __repr__(self):
         return '<Zone %r>' % (self.name) 
@@ -122,7 +112,7 @@ class Forme(db.Model):
     forme = db.Column(db.String(250))
 
     #Relation entre zone et referentiel via surface_champi
-    formes_champis = db.relationship("forme", secondary=forme_champi, back_populates="referentiel")
+    formes_champis = db.relationship("Forme", secondary=forme_champi, backref="referentiel")
 
     def __repr__(self):
         return '<Forme %r>' % (self.name) 
@@ -133,7 +123,7 @@ class Couleur(db.Model):
     couleur = db.Column(db.String(250))
 
     #Relation de couleur à référentiel via couleur_champi
-    couleurs = db.relationship("couleur", secondary=couleur_champi, back_populates="referentiel"
+    couleurs = db.relationship("Couleur", secondary=couleur_champi, backref="referentiel"
                                )
     def __repr__(self):
         return '<Couleur %r>' % (self.name) 
@@ -144,7 +134,7 @@ class TypeLamelle(db.Model):
     type_lamelle = db.Column(db.String(250))
 
     #Relation entre type lamelle et referentiel via type lamelle champi
-    types_lamelles = db.relationship("type_lamelle", secondary=type_lamelle_champi, back_populates="referentiel")
+    types_lamelles = db.relationship("TypeLamelle", secondary=type_lamelle_champi, backref="referentiel")
 
     def __repr__(self):
         return '<TypeLamelle %r>' % (self.name) 
@@ -156,7 +146,7 @@ class ModeInsertion(db.Model):
 
 
     #Relation entre mode insertion et referentiel via insertion pied chapeau
-    mode_insertions = db.relationship("mode_insertion", secondary=insertion_pied_chapeau, back_populates="referentiel")
+    mode_insertions = db.relationship("mode_insertion", secondary=insertion_pied_chapeau, backref="referentiel")
 
     def __repr__(self):
         return '<ModeInsertion %r>' % (self.name) 
@@ -168,7 +158,7 @@ class Danger(db.Model):
     uicn_categorie = db.Column(db.String(250))
 
     #Relation entre danger et referentiel via liste_rouge
-    dangers = db.relationship("danger", secondary=liste_rouge, back_populates="referentiel")
+    dangers = db.relationship("danger", secondary=liste_rouge, backref="referentiel")
 
     def __repr__(self):
         return '<Danger %r>' % (self.name) 
@@ -199,7 +189,7 @@ class Milieu(db.Model):
     milieu = db.Column(db.String(250))
 
     #Relation entre milieu et referentiel via surface_champi
-    milieux = db.relationship("milieu", secondary=milieu_champi, back_populates="referentiel")
+    milieux = db.relationship("Milieu", secondary=milieu_champi, backref="referentiel")
 
     def __repr__(self):
         return '<Milieu %r>' % (self.name) 
@@ -286,3 +276,21 @@ class DescriptionChampignon(db.Model):
 
     def __repr__(self):
         return '<DescriptionChampignon %r>' % (self.name) 
+
+# Table de relation liste_rouge avant que je la transforme en classe (elle était tout en haut du fichier)    
+# liste_rouge = db.Table(
+#     "liste_rouge",
+#     db.Column('taxref_id', db.Integer, db.ForeignKey('referentiel.taxref_id')),
+#     db.Column('id_danger', db.Integer, db.ForeignKey('danger.id')),
+#     db.Column('tendance', db.String(250)),
+#     db.Column('annee', db.Integer)
+#     )  
+
+class ListeRouge(db.Model):
+    __tablename__ = "liste_rouge",
+    #Foreign keys
+    taxref_id = db.Column(db.Integer, db.ForeignKey('referentiel.taxref_id')),
+    id_danger = db.Column(db.Integer, db.ForeignKey('danger.id')),
+    #Autres colonnes
+    tendance = db.Column(db.String(250)),
+    annee = db.Column(db.Integer)
