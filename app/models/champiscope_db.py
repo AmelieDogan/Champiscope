@@ -75,7 +75,6 @@ class Referentiel(db.Model):
     referentiels_confusion = db.relationship("Referentiel", backref="confusion", uselist=False)
     referentiels_iconographie = db.relationship("Referentiel", backref="iconographie", uselist=False)
     referentiels_taxon_superieur = db.relationship("Referentiel", backref="taxon_superieur", uselist=False)
-    #Doute sur cette relation
     referentiels_liste_rouge = db.relationship("Referentiel", backref="liste_rouge", uselist=False)
 
     def __repr__(self):
@@ -278,15 +277,6 @@ class DescriptionChampignon(db.Model):
 
     def __repr__(self):
         return '<DescriptionChampignon %r>' % (self.name) 
-
-# Table de relation liste_rouge avant que je la transforme en classe (elle était tout en haut du fichier)    
-# liste_rouge = db.Table(
-#     "liste_rouge",
-#     db.Column('taxref_id', db.Integer, db.ForeignKey('referentiel.taxref_id')),
-#     db.Column('id_danger', db.Integer, db.ForeignKey('danger.id')),
-#     db.Column('tendance', db.String(250)),
-#     db.Column('annee', db.Integer)
-#     )  
 
 class ListeRouge(db.Model):
     __tablename__ = "liste_rouge",
