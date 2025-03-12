@@ -75,6 +75,8 @@ class Referentiel(db.Model):
     referentiels_confusion = db.relationship("Referentiel", backref="confusion", uselist=False)
     referentiels_iconographie = db.relationship("Referentiel", backref="iconographie", uselist=False)
     referentiels_taxon_superieur = db.relationship("Referentiel", backref="taxon_superieur", uselist=False)
+    #Doute sur cette relation
+    referentiels_liste_rouge = db.relationship("Referentiel", backref="liste_rouge", uselist=False)
 
     def __repr__(self):
         return '<Referentiel %r>' % (self.name) 
