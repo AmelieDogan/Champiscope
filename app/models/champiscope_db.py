@@ -294,3 +294,6 @@ class ListeRouge(db.Model):
     #Autres colonnes
     tendance = db.Column(db.String(250)),
     annee = db.Column(db.Integer)
+
+    def __repr__(self):
+        return '<ListeRouge %r>' % (self.name) 
