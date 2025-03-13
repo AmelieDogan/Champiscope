@@ -14,6 +14,26 @@
     <section class="resutats">
 
         <!-- Ajouter le code pour l'affichage des résulats -->
+        {%if donnees%}
+        <table class="table">
+            <thead>
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Nom</th>
+                    <th scope="col">Nom vernaculaire</th>
+                </tr>
+            </thead>
+            <tbody>
+                {%for champi in donnees%}
+                <tr>
+                    <th scope="row">{{loop.index}}</th>
+                    <td>{{champi.nom}}</td>
+                    <td>{{champi.nom_vernaculaire}}</td>
+                </tr>
+                {%endfor%}
+            </tbody>
+        </table>
+        {%endif%}
         
     </section>
 

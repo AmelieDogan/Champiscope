@@ -1,5 +1,7 @@
 from ..app import app
 from flask import render_template
+from sqlalchemy import text
+from ..models.champiscope_db import Referentiel
 
 @app.route("/")
 def accueil():
@@ -7,7 +9,13 @@ def accueil():
 
 @app.route("/recherche.html")
 def recherche():
-    return render_template("pages/recherche.html")
+    donnees = []
+    for champi in Referentiel.query.all():
+        donnees.append({
+            "nom": champi.nom,
+            "nom_vernaculaire": champi.nom_vernaculaire,
+        })
+    return render_template("pages/recherche.html", donnees=donnees, sous_titre="Tous les champignons")
 
 @app.route("/dataviz.html")
 def dataviz():
