@@ -14,3 +14,4 @@ def to_bool(s):
 
 class Config():
     DEBUG = to_bool(os.environ.get("DEBUG"))
+    SQLALCHEMY_DATABASE_URI = os.environ.get("SQLALCHEMY_DATABASE_URI")
