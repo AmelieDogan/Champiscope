@@ -1,0 +1,13 @@
+{% extends "partials/conteneur.html" %}
+
+{% block contenu%}
+
+<h2>Quel champignon es-tu ? 🍄</h2>
+<h3 id="question-text">{{ question }}</h3>
+<div id="buttons">
+    {% for choice in choices %}
+    <button class="answer-button" onclick="sendAnswer('{{ choice }}')">{{ choice }}</button>
+    {% endfor %}
+</div>
+
+{%endblock%}

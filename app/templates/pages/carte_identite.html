@@ -4,19 +4,12 @@
 
     <!-- Section de présentation du champignon -->
     <section class="carte-identite">
-        <h2>Nom du champignon</h2>
+        <h2>{{sous_titre}}</h2>
         
-        <!-- Compléter avec un tableau donnant les caractéristiques du champignon
-        
-        couleur                             rouge, blanc, gris
-
-        taille minimum du chapeau           5
-        
-        taille maximum du chapeau           15
-
-        etc.
-        
-        -->
+        <p>Nom complet : {{donnees.nom_complet_html}}</p>
+        {% if donnees_referentiel.nom_vernaculaire %}
+        <p>Nom vernaculaire : {{donnees.nom_vernaculaire}}</p>
+        {% endif %}
 
     </section>
 
