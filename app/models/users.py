@@ -1,6 +1,13 @@
 from ..app import app, db, login
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin
+from ..models import Referentiels
+
+user_likes = db.Table(
+    "user_likes",
+    db.Column('champi_id', db.Integer, db.ForeignKey('referentiel.taxref_id')),
+    db.Column('user_id', db.Integer, db.ForeignKey('user.id'))
+)
 
 class User(UserMixin, db.Model):
     __tablename__ = "user"
