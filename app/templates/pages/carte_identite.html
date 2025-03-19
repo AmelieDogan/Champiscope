@@ -2,20 +2,400 @@
 
 {% block contenu%}
 
-    <!-- Section de présentation du champignon -->
-    <section class="carte-identite">
-        <h2>{{sous_titre}}</h2>
-        
-        <p>Nom complet : {{donnees.nom_complet_html}}</p>
-        {% if donnees_referentiel.nom_vernaculaire %}
-        <p>Nom vernaculaire : {{donnees.nom_vernaculaire}}</p>
-        {% endif %}
+<div class="carte-identite">
 
+    <h2>{{donnees.nom}}</h2>
+
+    <!-- Section principale d'information -->
+    <section class="infos-principales">
+        <div class="fiche-info">
+            <div class="info-taxonomie carton">
+                <h3>Taxonomie</h3>
+                {% if donnees.nom_complet_html %}
+                <p><strong>Nom scientifique complet :</strong> {{ donnees.nom_complet_html|safe }}</p>
+                {% endif %}
+                {% if donnees.nom_vernaculaire %}
+                <p><strong>Nom vernaculaire :</strong> {{ donnees.nom_vernaculaire }}</p>
+                {% endif %}
+                <p><strong>Rang taxonomique :</strong> {{ donnees.rang }}</p>
+                {% if donnees.est_reference %}
+                {% if donnees.synonymes %}
+                <p><strong>A pour synonymes :</strong></p>
+                <ul>
+                    {% for synonyme in donnees.synonymes %}
+                    <li>{{synonyme.nom}}</li>
+                    {% endfor %}
+                </ul>
+                {% else %}
+                <p>Auncun synonyme référencé</p>
+                {% endif %}
+                {% endif %}
+            </div>
+        </div>
+        <div class="champignon-carousel">
+            {% if donnees.iconographies %}
+            <div class="carousel-main">
+                <img src="{{ donnees.iconographies[0].url_image }}" alt="{{ donnees.nom_vernaculaire or donnees.nom }}"
+                    id="carousel-main-img">
+                <div class="loading-spinner" id="loading-spinner"></div>
+                {% if donnees.iconographies[0].credit %}
+                <p class="credit" id="image-credit">Crédit: {{ donnees.iconographies[0].credit }}</p>
+                {% endif %}
+
+                {% if donnees.iconographies|length > 1 %}
+                <div class="carousel-nav">
+                    <button class="nav-button prev-button">&lt;</button>
+                    <button class="nav-button next-button">&gt;</button>
+                </div>
+                {% endif %}
+            </div>
+
+            {% if donnees.iconographies|length > 1 %}
+            <div class="carousel-thumbs">
+                {% for img in donnees.iconographies %}
+                <div class="thumb {% if loop.first %}active{% endif %}" data-src="{{ img.url_image }}"
+                    data-credit="{{ img.credit }}" data-index="{{ loop.index0 }}">
+                    <img src="{{ img.url_image }}" alt="{{ donnees.nom_vernaculaire or donnees.nom }}">
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+            {% else %}
+            <div class="no-image">Pas d'image disponible</div>
+            {% endif %}
+        </div>
+    </section>
+
+    <!-- Section comestibilité -->
+    <section class="comestibilite carton">
+        <h3>Comestibilité</h3>
+        {% if donnees.description_champignons %}
+        {% set desc = donnees.description_champignons[0] %}
+        <div class="comestibilite">
+            <h4>Comestibilité</h4>
+            {% if desc.comestibilite is defined %}
+            <p><strong>Comestible :</strong> {% if desc.comestibilite %}Oui{% else %}Non{% endif %}</p>
+            {% endif %}
+            <p><strong>Détails :</strong>
+                {% if desc.comestibilite_detail %}
+                {{ desc.comestibilite_detail }}</p>
+            {% else %}
+            aucune précision
+            {% endif %}
+            </p>
+        </div>
+        {% else %}
+        <p>Aucune information sur la comestibilité disponible.</p>
+        {% endif %}
+    </section>
+
+    <!-- Section confusions possibles -->
+    <section class="confusions">
+        <h3>Confusions possibles</h3>
+        {% if donnees.confused_with.count() > 0 %}
+        <ul class="liste-confusions">
+            {% for confusion in donnees.confused_with %}
+            <li>
+                <a href="{{ url_for('champi', taxref=confusion.taxref_id) }}">
+                    {% if confusion.nom_vernaculaire %}
+                    {{ confusion.nom }} ({{ confusion.nom_vernaculaire }})
+                    {% else %}
+                    {{ confusion.nom }}
+                    {% endif %}
+                </a>
+            </li>
+            {% endfor %}
+        </ul>
+        {% else %}
+        <p>Aucune confusion documentée pour cette espèce.</p>
+        {% endif %}
+    </section>
+
+    <!-- Section description morphologique -->
+    <section class="description-morphologique">
+        <h3>Description morphologique</h3>
+        {% if donnees.description_champignons %}
+        {% set desc = donnees.description_champignons[0] %}
+        <div class="caracteristiques">
+            <div class="chapeau carton">
+                <h4>Chapeau</h4>
+                {% if desc.diametre_chapeau_min and desc.diametre_chapeau_max %}
+                <p><strong>Diamètre :</strong> {{ desc.diametre_chapeau_min }} à {{ desc.diametre_chapeau_max }} cm</p>
+                {% endif %}
+                {% if desc.oxydation_chapeau %}
+                <p><strong>Oxydation :</strong> Oui</p>
+                {% endif %}
+            </div>
+
+            <div class="hymenophore carton">
+                <h4>
+                    <span class="terme-technique">
+                        Hyménophore
+                        <span class="infobulle">Partie du champignon qui porte l'hyménium, couche de cellules fertiles
+                            produisant les spores.</span>
+                    </span>
+                </h4>
+                {% if desc.dessous_chapeau %}
+                <p><strong>Type :</strong> {{ desc.dessous_chapeau }}</p>
+                {% endif %}
+
+                {% for type_lamelle in donnees.types_lamelle_associés %}
+                <p><strong>Type de lamelles :</strong> {{ type_lamelle.type_lamelle }}</p>
+                {% endfor %}
+
+                {% if desc.espace_entre_lamelles %}
+                <p><strong>Espacement des lamelles :</strong> {{ desc.espace_entre_lamelles }}</p>
+                {% endif %}
+            </div>
+
+            <div class="pied carton">
+                <h4>Pied</h4>
+                {% if desc.pied_creux_ou_plein %}
+                <p><strong>Structure :</strong> {{ desc.pied_creux_ou_plein }}</p>
+                {% endif %}
+                {% if desc.position_pied_chapeau %}
+                <p><strong>Position :</strong> {{ desc.position_pied_chapeau }}</p>
+                {% endif %}
+                {% if donnees.modes_insertion_associés %}
+                <p><strong>Mode d'insertion :</strong></p>
+                <ul>
+                    {% for mode in donnees.modes_insertion_associés %}
+                    <li>{{ mode.mode_insertion }}</li>
+                    {% endfor %}
+                </ul>
+                {% endif %}
+                {% if desc.presence_anneau %}
+                <p><strong>Anneau :</strong> Présent</p>
+                {% endif %}
+            </div>
+
+            <div class="chair carton">
+                <h4>Chair</h4>
+                {% if desc.oxydation_chair %}
+                <p><strong>Oxydation :</strong> Oui</p>
+                {% endif %}
+                {% if desc.odeur %}
+                <p><strong>Odeur :</strong> {{ desc.odeur }}</p>
+                {% endif %}
+                {% if desc.latex %}
+                <p><strong>Latex :</strong> Présent</p>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="caracteristiques-visuelles carton">
+            <h4>Caractéristiques visuelles</h4>
+            
+        </div>
+        {% else %}
+        <p>Aucune description disponible pour ce champignon.</p>
+        {% endif %}
+    </section>
+
+    <!-- Section écologie et répartition -->
+    <section class="ecologie-repartition">
+        <h3>Écologie et répartition</h3>
+
+        <div class="habitat-milieu carton">
+            <h4>Habitat et milieu</h4>
+            {% if donnees.habitat_id %}
+            <p><strong>Habitat :</strong> {{ donnees.habitats.definition }}</p>
+            {% endif %}
+
+            {% if donnees.milieux_associés %}
+            <table>
+                <tr>
+                    <th>
+                        Milieux associés :
+                    </th>
+                    <td>
+                        <ul>
+                            {% for milieu in donnees.milieux_associés %}
+                            <li>{{ milieu.milieu }}</li>
+                            {% endfor %}
+                        </ul>
+                    </td>
+                </tr>
+            </table>
+            {% endif %}
+
+            {% if donnees.description_champignons and donnees.description_champignons[0].pousse_sur_du_bois %}
+            <p><strong>Substrat :</strong> Pousse sur du bois</p>
+            {% endif %}
+
+            {% if donnees.description_champignons and donnees.description_champignons[0].pousse_en_touffe %}
+            <p><strong>Mode de croissance :</strong> En touffe</p>
+            {% endif %}
+        </div>
+
+        <div class="saison carton">
+            <h4>Saison de pousse</h4>
+            {% if donnees.mois_pousses %}
+            {% set mois = donnees.mois_pousses[0] %}
+            <div class="calendrier">
+                <div class="mois {% if mois.janvier %}actif{% endif %}">Jan</div>
+                <div class="mois {% if mois.fevrier %}actif{% endif %}">Fév</div>
+                <div class="mois {% if mois.mars %}actif{% endif %}">Mar</div>
+                <div class="mois {% if mois.avril %}actif{% endif %}">Avr</div>
+                <div class="mois {% if mois.mai %}actif{% endif %}">Mai</div>
+                <div class="mois {% if mois.juin %}actif{% endif %}">Jun</div>
+                <div class="mois {% if mois.juillet %}actif{% endif %}">Jul</div>
+                <div class="mois {% if mois.aout %}actif{% endif %}">Aoû</div>
+                <div class="mois {% if mois.septembre %}actif{% endif %}">Sep</div>
+                <div class="mois {% if mois.octobre %}actif{% endif %}">Oct</div>
+                <div class="mois {% if mois.novembre %}actif{% endif %}">Nov</div>
+                <div class="mois {% if mois.decembre %}actif{% endif %}">Déc</div>
+            </div>
+            {% else %}
+            <p>Aucune information sur la saisonnalité disponible.</p>
+            {% endif %}
+        </div>
+
+        <div class="distribution carton">
+            <h4>Distribution géographique</h4>
+            {% if donnees.presences %}
+            {% set presence = donnees.presences[0] %}
+            <ul class="regions">
+                {% if presence.FR %}<li>France métropolitaine</li>{% endif %}
+                {% if presence.GF %}<li>Guyane française</li>{% endif %}
+                {% if presence.MAR %}<li>Martinique</li>{% endif %}
+                {% if presence.GUA %}<li>Guadeloupe</li>{% endif %}
+                {% if presence.SM %}<li>Saint-Martin</li>{% endif %}
+                {% if presence.SB %}<li>Saint-Barthélemy</li>{% endif %}
+                {% if presence.SPM %}<li>Saint-Pierre-et-Miquelon</li>{% endif %}
+                {% if presence.MAY %}<li>Mayotte</li>{% endif %}
+                {% if presence.EPA %}<li>Îles Éparses</li>{% endif %}
+                {% if presence.REU %}<li>La Réunion</li>{% endif %}
+                {% if presence.SA %}<li>Îles subantarctiques</li>{% endif %}
+                {% if presence.TA %}<li>Terre Adélie</li>{% endif %}
+                {% if presence.PF %}<li>Polynésie française</li>{% endif %}
+                {% if presence.NC %}<li>Nouvelle-Calédonie</li>{% endif %}
+                {% if presence.WF %}<li>Wallis-et-Futuna</li>{% endif %}
+                {% if presence.CLI %}<li>Clipperton</li>{% endif %}
+            </ul>
+            {% else %}
+            <p>Aucune information sur la distribution disponible.</p>
+            {% endif %}
+        </div>
     </section>
 
     <!-- Section avec la carte représentant les observations de ce champignon -->
     <section class="carte">
-        
+        {% from "partials/macros.html" import carte_observations %}
+
+        <div class="observation-champignon">
+            <h2>Observations en France métropolitaine</h2>
+            {{ carte_observations(donnees.taxref_id) }}
+        </div>
     </section>
 
+</div>
+
 {%endblock%}
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Éléments du carrousel
+        const mainImg = document.getElementById('carousel-main-img');
+        const creditElem = document.getElementById('image-credit');
+        const thumbs = document.querySelectorAll('.thumb');
+        const prevButton = document.querySelector('.prev-button');
+        const nextButton = document.querySelector('.next-button');
+        const loadingSpinner = document.getElementById('loading-spinner');
+
+        // Variables pour suivre l'image active
+        let currentIndex = 0;
+        const maxIndex = thumbs.length - 1;
+
+        // Fonction pour précharger une image
+        function preloadImage(url) {
+            return new Promise((resolve, reject) => {
+                const img = new Image();
+                img.onload = () => resolve(img);
+                img.onerror = reject;
+                img.src = url;
+            });
+        }
+
+        // Fonction pour changer l'image affichée
+        async function changeImage(index) {
+            if (index < 0) index = maxIndex;
+            if (index > maxIndex) index = 0;
+
+            currentIndex = index;
+            const activeThumb = document.querySelector(`.thumb[data-index="${index}"]`);
+            const imageUrl = activeThumb.getAttribute('data-src');
+
+            // Afficher le spinner de chargement
+            mainImg.style.opacity = '0.3';
+            loadingSpinner.style.display = 'block';
+
+            try {
+                // Précharger l'image
+                await preloadImage(imageUrl);
+
+                // Mettre à jour l'image principale
+                mainImg.src = imageUrl;
+                mainImg.style.opacity = '1';
+
+                // Mettre à jour le crédit si disponible
+                const credit = activeThumb.getAttribute('data-credit');
+                if (creditElem) {
+                    if (credit) {
+                        creditElem.textContent = 'Crédit: ' + credit;
+                        creditElem.style.display = 'block';
+                    } else {
+                        creditElem.style.display = 'none';
+                    }
+                }
+
+                // Mettre à jour la classe active des miniatures
+                thumbs.forEach(t => t.classList.remove('active'));
+                activeThumb.classList.add('active');
+
+                // Faire défiler la miniature dans la vue si nécessaire
+                activeThumb.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+            } catch (error) {
+                console.error("Erreur lors du chargement de l'image:", error);
+            } finally {
+                // Cacher le spinner de chargement
+                loadingSpinner.style.display = 'none';
+            }
+        }
+
+        // Ajouter des écouteurs d'événements aux miniatures
+        thumbs.forEach(thumb => {
+            thumb.addEventListener('click', function () {
+                const index = parseInt(this.getAttribute('data-index'));
+                changeImage(index);
+            });
+        });
+
+        // Navigation avec les boutons
+        if (prevButton && nextButton) {
+            prevButton.addEventListener('click', () => changeImage(currentIndex - 1));
+            nextButton.addEventListener('click', () => changeImage(currentIndex + 1));
+        }
+
+        // Navigation avec le clavier
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'ArrowLeft') {
+                changeImage(currentIndex - 1);
+            } else if (e.key === 'ArrowRight') {
+                changeImage(currentIndex + 1);
+            }
+        });
+
+        // Ajuster la taille du conteneur principal après chargement de l'image
+        mainImg.addEventListener('load', function () {
+            const mainContainer = document.querySelector('.carousel-main');
+            // Laisser un peu de marge autour de l'image
+            mainContainer.style.minHeight = 'auto';
+        });
+
+        // Définir la première miniature comme active par défaut
+        if (thumbs.length > 0) {
+            thumbs[0].classList.add('active');
+        }
+    });
+</script>

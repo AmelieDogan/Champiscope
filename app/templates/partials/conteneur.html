@@ -4,8 +4,21 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Champiscope - {{sous_titre}}</title>
+    
     <link rel="stylesheet" href="../static/style.css">
-    <script src="../static/javascript.js"></script>
+
+    <script src="../static/main.js"></script>
+
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    
+    <!-- Leaflet MarkerCluster pour regrouper les marqueurs proches -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.Default.css" />
+    
+    <!-- Leaflet JavaScript -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/leaflet.markercluster@1.4.1/dist/leaflet.markercluster.js"></script>
 </head>
 <body>
 
@@ -14,11 +27,11 @@
         <h1>Champiscope</h1>
         <nav>
             <a href="/">Accueil</a>
-            <a href="/recherche.html">Explorer</a>
-            <a href="/dataviz.html">Dataviz</a>
-            <a href="/quiz/tous_les_quiz.html">Quiz</a>
-            <a href="/profil.html">Profil</a>
-            <a href="/connexion.html">Connexion</a>
+            <a href="/recherche">Explorer</a>
+            <a href="/dataviz">Dataviz</a>
+            <a href="/quiz/tous_les_quiz">Quiz</a>
+            <a href="/profil">Profil</a>
+            <a href="/connexion">Connexion</a>
         </nav>
     </header>
 
@@ -33,9 +46,9 @@
     <footer>
         <p>© 2025 Champiscope</p>
         <div class="footer-liens">
-            <a href="/a_propos.html">À propos</a>
-            <a href="/remerciements.html">Remerciements</a>
-            <a href="/mentions_legales.html">Mentions légales</a>
+            <a href="/a_propos">À propos</a>
+            <a href="/remerciements">Remerciements</a>
+            <a href="/mentions_legales">Mentions légales</a>
         </div>
     </footer>
 
