@@ -121,13 +121,9 @@ def dataviz():
 def quiz():
     return render_template("pages/quiz/tous_les_quiz.html", sous_titre="Tous les quiz")
 
-@app.route("/profil")
+@app.route("/utilisateur/profil.html")
 def profil():
-    return render_template("pages/profil.html", sous_titre="Mon profil")
-
-@app.route("/connexion")
-def connexion():
-    return render_template("pages/connexion.html", sous_titre="Connexion")
+    return render_template("pages/utilisateur/profil.html", sous_titre="Mon profil")
 
 @app.route("/a_propos")
 def a_propos():
