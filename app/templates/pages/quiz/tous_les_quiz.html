@@ -2,8 +2,41 @@
 
 {% block contenu%}
 
-<h2>Quiz</h2>
+<!-- Quiz Champignons -->
+<div class="quiz-card">
+    <div class="quiz-image">
+        <img src="../static/images/quiz-champignons.jpg" alt="Quiz des champignons">
+    </div>
+    <div class="quiz-content">
+        <h3>Quel champignon es-tu ?</h3>
+        <p>Découvre quel champignon correspond le mieux à ta personnalité ! À travers 12 questions simples, ce quiz te
+            révélera si tu es plutôt un Cèpe de Bordeaux sage et indépendant, une Chanterelle optimiste et lumineuse, ou
+            peut-être même une mystérieuse Truffe Noire.</p>
+        <div class="quiz-meta">
+            <span><i class="icon-time">⏱︎</i> 5 minutes</span>
+            <span><i class="icon-question">？</i> 12 questions</span>
+        </div>
+        <a href="/quiz/quel_champi_suis_je" class="btn-quiz">Commencer le quiz</a>
+    </div>
+</div>
 
-<p>A compléter</p>
+<!-- Quiz Comestibilité -->
+<div class="quiz-card">
+    <div class="quiz-image">
+        <img src="../static/images/quiz-comestible.jpg" alt="Quiz de comestibilité">
+    </div>
+    <div class="quiz-content">
+        <h3>Es-tu un expert en comestibilité ?</h3>
+        <p>Teste tes connaissances sur les champignons comestibles et toxiques. Saurais-tu identifier les espèces
+            dangereuses des délicieuses trouvailles forestières ?</p>
+        <div class="quiz-meta">
+            <span><i class="icon-time">⏱︎</i> 10 minutes</span>
+            <span><i class="icon-question">？</i> 15 questions</span>
+        </div>
+        <a href="/quiz/comestible" class="btn-quiz">Commencer le quiz</a>
+    </div>
+</div>
+
+<!-- Autres quiz... -->
 
 {%endblock%}

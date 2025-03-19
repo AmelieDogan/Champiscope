@@ -69,9 +69,14 @@ class Referentiel(db.Model):
     reference_id = db.Column(db.Integer, db.ForeignKey('referentiel.taxref_id'))
     habitat_id = db.Column(db.Integer, db.ForeignKey('habitat.id'))
 
-    #Relations entre Referentiel et les autres tables PAS de relation
+    synonymes = db.relationship(
+        'Referentiel',
+        backref=db.backref('reference', remote_side=[taxref_id]),
+        foreign_keys=[reference_id]
+    )
+
     mois_pousses = db.relationship("MoisPousse", backref="mois_pousses", lazy=True)
-    description_champignons = db.relationship("DescriptionChampignon", backref="description_champigons", lazy=True)
+    description_champignons = db.relationship("DescriptionChampignon", backref="description_champignons", lazy=True)
     observation_humaines = db.relationship("ObservationHumaine", backref="observation_humaines", lazy=True)
     presences = db.relationship("Presence", backref="presences", lazy=True)
     habitats = db.relationship("Habitat", backref="habitats", lazy=True)
@@ -89,6 +94,10 @@ class Referentiel(db.Model):
         primaryjoin=(taxon_superieur.c.taxref_id == taxref_id),
         secondaryjoin=(taxon_superieur.c.taxsup_id == taxref_id),
         backref=db.backref('taxon_parent_de', lazy='dynamic'), lazy='dynamic')
+    
+    surfaces_associées = db.relationship("Surface", secondary=surface_champi, back_populates="referentiels")
+    formes_associées = db.relationship("Forme", secondary=forme_champi, back_populates="referentiels")
+    couleurs_associées = db.relationship("Couleur", secondary=couleur_champi, back_populates="referentiels")
 
     def __repr__(self):
         return '<Referentiel %r>' % (self.name) 
@@ -98,8 +107,9 @@ class Surface(db.Model):
     id = db.Column(db.Integer, primary_key = True, unique=True)
     surface = db.Column(db.String(250))
 
-    #Relation entre surface et referentiel via surface_champi
-    referentiels = db.relationship("Referentiel", secondary=surface_champi, backref="referentiels")
+    zones = db.relationship("Zone", secondary=surface_champi, back_populates="surfaces")
+    referentiels = db.relationship("Referentiel", secondary=surface_champi, back_populates="surfaces_associées")
+
     def __repr__(self):
         return '<Surface %r>' % (self.name) 
 
@@ -108,14 +118,12 @@ class Zone(db.Model):
     id = db.Column(db.String(25), primary_key = True, unique=True)
     zone = db.Column(db.String(250))
 
-    #Relation entre zone et referentiel via surface_champi
-    surfaces = db.relationship("Surface", secondary=surface_champi, backref="surfaces")
+    surfaces = db.relationship("Surface", secondary=surface_champi, back_populates="zones")
+    formes = db.relationship("Forme", secondary=forme_champi, back_populates="zones")
+    couleurs = db.relationship("Couleur", secondary=couleur_champi, back_populates="zones")
 
-    #Relation entre zone et referentiel via surface_champi
-    formes = db.relationship("Forme", secondary=forme_champi, backref="formes")
-
-    #Relation entre zone et referentiel via surface_champi
-    couleurs = db.relationship("Couleur", secondary=couleur_champi, backref="couleurs")
+    def __lt__(self, other):
+        return self.zone < other.zone  # Comparaison basée sur le nom de la zone
 
     def __repr__(self):
         return '<Zone %r>' % (self.name) 
@@ -125,8 +133,8 @@ class Forme(db.Model):
     id = db.Column(db.Integer, primary_key = True, unique=True)
     forme = db.Column(db.String(250))
 
-    #Relation entre zone et referentiel via surface_champi
-    referentiels = db.relationship("Referentiel", secondary=forme_champi, backref="formes_associées")
+    zones = db.relationship("Zone", secondary=forme_champi, back_populates="formes")
+    referentiels = db.relationship("Referentiel", secondary=forme_champi, back_populates="formes_associées")
 
     def __repr__(self):
         return '<Forme %r>' % (self.name) 
@@ -136,9 +144,9 @@ class Couleur(db.Model):
     id = db.Column(db.Integer, primary_key = True, unique=True)
     couleur = db.Column(db.String(250))
 
-    #Relation de couleur à référentiel via couleur_champi
-    renferentiels = db.relationship("Referentiel", secondary=couleur_champi, backref="couleurs_associées"
-                               )
+    zones = db.relationship("Zone", secondary=couleur_champi, back_populates="couleurs")
+    referentiels = db.relationship("Referentiel", secondary=couleur_champi, back_populates="couleurs_associées")
+    
     def __repr__(self):
         return '<Couleur %r>' % (self.name) 
 

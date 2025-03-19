@@ -1,40 +1,60 @@
-{% extends "partials/conteneur.html" %}
+{% extends 'partials/conteneur.html' %}
 
-{% block contenu%}
+{% from 'partials/macros.html' import pagination_macro with context %}
 
-    <!-- Section de présentation du champignon -->
-    <section class="recherche">
-        <h2>Rechercher un champignon</h2>
+{% block contenu %}
+
+<div class="recherche-container">
+    <h1>Recherche de champignons</h1>
+    
+    <!-- Barre de recherche rapide -->
+    <div class="search-bar">
+        <form action="{{ url_for('recherche') }}" method="GET">
+            <input type="text" name="q" value="{{ query }}" placeholder="Rechercher un champignon...">
+            <button type="submit">Rechercher</button>
+        </form>
+    </div>
+
+    <div class="sort-options">
+        <form method="GET" action="{{ url_for('recherche') }}">
+            <input type="hidden" name="q" value="{{ query }}">
+            <label for="sort">Trier par :</label>
+            <select name="sort" id="sort" onchange="this.form.submit()">
+                <option value="asc" {% if sort_order == 'asc' %}selected{% endif %}>Nom (A-Z)</option>
+                <option value="desc" {% if sort_order == 'desc' %}selected{% endif %}>Nom (Z-A)</option>
+            </select>
+        </form>
+    </div>
+    
+    <div class="recherche-content">
+        <!-- Panneau des filtres -->
+        <div class="filtres-panel">
+            
+        </div>
         
-        <!-- Ajouter le code relatif à la recherche -->
+        <!-- Résultats de recherche -->
+        <div class="resultats-panel">
+            {%if nb_champi%}
+            <h3>Résultats ({{ nb_champi }})</h3>
+            {% endif %}
 
-    </section>
+            {{ pagination_macro('recherche', pagination.page) }}
 
-    <!-- Section avec la carte représentant les observations de ce champignon -->
-    <section class="resutats">
+            {%if pagination%}
+                <div class="resultats-grid">
+                    {% for champignon in pagination.items %}
+                        {% include 'partials/carte_champignon.html' %}
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="no-results">
+                    <p>Aucun champignon ne correspond à votre recherche.</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
 
-        <!-- Ajouter le code pour l'affichage des résulats -->
-        {%if donnees%}
-        <table class="table">
-            <thead>
-                <tr>
-                    <th scope="col">#</th>
-                    <th scope="col">Nom</th>
-                    <th scope="col">Nom vernaculaire</th>
-                </tr>
-            </thead>
-            <tbody>
-                {%for champi in donnees%}
-                <tr>
-                    <th scope="row">{{loop.index}}</th>
-                    <td>{{champi.nom}}</td>
-                    <td>{{champi.nom_vernaculaire}}</td>
-                </tr>
-                {%endfor%}
-            </tbody>
-        </table>
-        {%endif%}
-        
-    </section>
+{{ pagination_macro('recherche', pagination.page) }}
 
-{%endblock%}
+{% endblock %}

@@ -1,0 +1,25 @@
+{% extends "partials/conteneur.html" %}
+
+{% block contenu%}
+
+<section class="resutats">
+
+    <!-- Ajouter le code pour l'affichage des résulats -->
+    {% if donnees %}
+    {% for champi in donnees %}
+    <div class="apercu_champi">
+        <h3>{{donnees.nom}}</h3>
+        <p>{{donnees.nom_vernaculaire}}</p>
+        {% for image in donnees.iconographies %}
+        <figure>
+            <img src="{{ image.url_image }}" alt="{{ donnees.nom }}" />
+            <figcaption>© {{ image.credit }}</figcaption>
+        </figure>
+        {% endfor %}
+    </div>
+    {% endfor %}
+    {% endif %}
+
+</section>
+
+{% endblock %}
