@@ -1,0 +1,104 @@
+{% macro pagination_macro(endpoint, page_) %}
+<div class="pagination-container">
+    <nav aria-label="research-pagination">
+        <ul class="pagination">
+            {%- for page in pagination.iter_pages() %}
+                {% if page %}
+        
+                {% if page != pagination.page %}
+                    <li class="page-item">
+                        <a class="page-link" href="{{ url_for(endpoint, page=page, q=request.args.get('q', ''), sort=request.args.get('sort', 'asc')) }}">{{ page }}</a>
+                    </li>
+                {% else %}
+                    <li class="page-item active disabled">
+                    <a class="page-link">{{page}} <span class="sr-only">(actuelle)</span></a>
+                    </li>
+                {% endif %}
+        
+                {% else %}
+                    <li class="page-item disabled">
+                    <a class="page-link">...</a>
+                    </li>
+                {% endif %}
+        
+            {%- endfor %}
+        </ul>
+    </nav>
+</div>
+{% endmacro %}
+
+{% macro carte_observations(taxref_id) %}
+<div class="carte-container">
+    <div id="map-{{ taxref_id }}" style="height: 400px; width: 100%;"></div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialisation de la carte Leaflet          
+            var map = L.map('map-{{ taxref_id }}').setView([46.603354, 1.888334], 5); // Centre sur la France
+            
+            // Ajout du fond de carte
+            L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}', {
+	        attribution: 'Tiles &copy; Esri &mdash; Esri, DeLorme, NAVTEQ, TomTom, Intermap, iPC, USGS, FAO, NPS, NRCAN, GeoBase, Kadaster NL, Ordnance Survey, Esri Japan, METI, Esri China (Hong Kong), and the GIS User Community',
+            }).addTo(map);
+            
+            // Récupération des données d'observations incluant les synonymes
+            fetch('/api/observations_avec_synonymes/{{ taxref_id }}')
+                .then(response => response.json())
+                .then(data => {
+                    // Si aucune observation, afficher un message
+                    if (Object.keys(data).length === 0 || Object.values(data).flat().length === 0) {
+                        document.getElementById('map-{{ taxref_id }}').innerHTML = '<div class="no-data-message" style="padding: 20px; text-align: center;">Aucune observation disponible pour cette espèce et ses synonymes</div>';
+                        return;
+                    }
+                    
+                    // Création des groupes de marqueurs pour chaque taxon
+                    var allMarkers = L.markerClusterGroup();
+                    
+                    // Pour chaque taxon (espèce de référence + synonymes)
+                    Object.keys(data).forEach(function(taxonId) {
+                        var taxonName = data[taxonId].nom;
+                        var observations = data[taxonId].observations;
+                        var isReference = taxonId == {{ taxref_id }};
+                        
+                        // Création d'une icône personnalisée
+                        var markerIcon = L.divIcon({
+                            html: `<div style="background-color: #5f573f; width:10px; height:10px; border-radius:50%; border:2px solid white;"></div>`,
+                            className: 'custom-marker',
+                            iconSize: [14, 14],
+                            iconAnchor: [7, 7]
+                        });
+                        
+                        // Création des marqueurs pour ce taxon
+                        observations.forEach(function(obs) {
+                            if (obs.latitude_decimale && obs.longitude_decimale) {
+                                var marker = L.marker([obs.latitude_decimale, obs.longitude_decimale], {icon: markerIcon});
+                                
+                                // Création du popup avec les informations de l'observation
+                                var popupContent = `
+                                    <strong>${taxonName}</strong><br>
+                                    ${isReference ? '<em>(Espèce de référence)</em>' : '<em>(Synonyme)</em>'}<br>
+                                    Date: ${obs.jour || '??'}/${obs.mois || '??'}/${obs.annee || '????'}<br>
+                                    ${obs.identifie_par ? 'Identifié par: ' + obs.identifie_par : ''}
+                                `;
+                                
+                                marker.bindPopup(popupContent);
+                                allMarkers.addLayer(marker);
+                            }
+                        });
+                    });
+                    
+                    map.addLayer(allMarkers);
+                    
+                    // Ajuster la vue pour montrer toutes les observations
+                    if (allMarkers.getLayers().length > 0) {
+                        map.fitBounds(allMarkers.getBounds(), { padding: [30, 30] });
+                    }
+                })
+                .catch(error => {
+                    console.error('Erreur lors du chargement des observations:', error);
+                    document.getElementById('map-{{ taxref_id }}').innerHTML = '<div class="error-message" style="padding: 20px; text-align: center; color: red;">Erreur lors du chargement des observations</div>';
+                });
+        });
+    </script>
+</div>
+{% endmacro %}
