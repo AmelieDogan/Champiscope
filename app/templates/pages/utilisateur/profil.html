@@ -1,20 +1,95 @@
 {% extends "partials/conteneur.html" %}
 
-{% block contenu%}
+{% block contenu %}
+<section>
+    <h2>Mon profil</h2>
+    <div>
+        <div>
+            <div>
+                <!-- Image de profil actuelle -->
+                <div>
+                    <img src="{{ url_for('static', filename='img/' + (current_user.profile_image if current_user.profile_image else 'champi_1.jpg')) }}" 
+                    alt="Photo de profil" style="max-width: 150px;">               
+                </div>
+                
+                <!-- Bouton pour changer la photo de profil -->
+                <div>
+                    <a href="{{ url_for('update_profile_image') }}" class="btn btn-primary">Changer ma photo de profil</a>
+                </div>
+            </div>
+            
+            <div>
+                <h3>{{ current_user.pseudo }}</h3>
+                <p><i></i> {{ current_user.mail }}</p>
+                <p><i></i> {{ user_likes|length }} champignons likés</p>
+            </div>
+        </div>
+    </div>    
+</section>
 
-    <!-- Section de présentation du champignon -->
-    <section class="profil-utilisateur">
-        <h2>Mon profil</h2>
-        
-        <!-- Ajouter le code pour afficher les informations de l'utilisateur -->
+<!-- Section avec un carrousel des champignons likés -->
+<section class="carrousel container my-5">
+    <h3 class="mb-4">Mes champignons favoris</h3>
+    
+    {% if user_likes %}
+        <div id="carouselChampignons" class="carousel slide" data-bs-ride="carousel">
+            <div class="carousel-inner">
+                {% for i in range(0, user_likes|length, 3) %}
+                    <div class="carousel-item {% if i == 0 %}active{% endif %}">
+                        <div class="row">
+                            {% for j in range(i, i + 3) if j < user_likes|length %}
+                                <div class="col-md-4 mb-3">
+                                    <div class="card h-100">
+                                        <img src="{{ url_for('champignon_image', image_path=user_likes[j].champignon.iconographie.image_path) }}" 
+                                             class="card-img-top" alt="{{ user_likes[j].champignon.nom_commun }}">
+                                        <div class="card-body">
+                                            <h5 class="card-title">{{ user_likes[j].champignon.referentiel.nom_vernaculaire }}</h5>
+                                            <p class="card-text text-muted"><em>{{ user_likes[j].champignon.nom_latin }}</em></p>
+                                            <a href="{{ url_for('champignon', id=user_likes[j].champignon.id) }}" class="btn btn-outline-primary">Voir détails</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+            <button class="carousel-control-prev" type="button" data-bs-target="#carouselChampignons" data-bs-slide="prev">
+                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Précédent</span>
+            </button>
+            <button class="carousel-control-next" type="button" data-bs-target="#carouselChampignons" data-bs-slide="next">
+                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Suivant</span>
+            </button>
+        </div>
+    {% else %}
+        <div class="alert alert-info">
+            <p>Vous n'avez pas encore de champignons favoris. Explorez notre catalogue et ajoutez des champignons à vos favoris !</p>
+        </div>
+    {% endif %}
+</section>
+<h3>Changer mon mot de passe</h3>
+<form action="{{ url_for('update_password') }}" method="POST">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    
+    <div class="mb-3">
+        <label for="current_password" class="form-label">Mot de passe actuel</label>
+        <input type="password" class="form-control" id="current_password" name="current_password" required>
+    </div>
+    
+    <div class="mb-3">
+        <label for="new_password" class="form-label">Nouveau mot de passe</label>
+        <input type="password" class="form-control" id="new_password" name="new_password" required>
+    </div>
+    
+    <div class="mb-3">
+        <label for="confirm_password" class="form-label">Confirmer le nouveau mot de passe</label>
+        <input type="password" class="form-control" id="confirm_password" name="confirm_password" required>
+    </div>
 
-    </section>
+    <button type="submit" class="btn btn-primary">Mettre à jour</button>
+</form>
 
-    <!-- Section avec un carrousel des champignons "j'aime" -->
-    <section class="carrousel">
+{% endblock %}
 
-        <!-- Ajouter le code pour le carrousel -->
-        
-    </section>
-
-{%endblock%}
