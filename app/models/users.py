@@ -1,13 +1,7 @@
 from ..app import app, db, login
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin
-from ..models import Referentiels
-
-user_likes = db.Table(
-    "user_likes",
-    db.Column('champi_id', db.Integer, db.ForeignKey('referentiel.taxref_id')),
-    db.Column('user_id', db.Integer, db.ForeignKey('user.id'))
-)
+from ..models.champiscope_db import Referentiel, user_likes
 
 class User(UserMixin, db.Model):
     __tablename__ = "user"
@@ -15,12 +9,15 @@ class User(UserMixin, db.Model):
     pseudo = db.Column(db.String(25), unique=True)
     password = db.Column(db.String(250))
     mail = db.Column(db.String(25), unique=True)
+    profile_image = db.Column(db.String(120), default="champi_1.jpg") 
+    #Relation avec user_likes
+    likes = db.relationship('Referentiel', secondary=user_likes, backref=db.backref('user_likers', lazy='dynamic'))
 
     def __repr__(self):
-        return '<User %r>' % (self.name)
+        return '<User %r>' % (self.id)
     
     @staticmethod
-    def ajout(pseudo, password, mail):
+    def ajout(pseudo, password, mail): # Ajouter un nouvel utilisateur
         erreurs = []
         print(f"Vérification des données : {pseudo}, {password},{mail}")
         if not pseudo:
@@ -44,9 +41,8 @@ class User(UserMixin, db.Model):
             db.session.commit()
             return True, utilisateur
         except Exception as erreur:
-            #return False, [str(erreur)]
             db.session.rollback()  # Annuler la transaction en cas d'erreur
-            print(f"Erreur SQL lors de l'insertion de l'utilisateur : {erreur}")  # Afficher l'erreur
+            print(f"Erreur SQL lors de l'insertion de l'utilisateur : {erreur}")
             return False, [f"Erreur lors de l'insertion : {erreur}"]
         
     def get_id(self):
@@ -57,8 +53,13 @@ class User(UserMixin, db.Model):
         return User.query.get(int(id))
     
     @staticmethod
-    def identification(pseudo, password):
+    def identification(pseudo, password): # Identifier l'utilisateur via son pseudo et son mot de passe
         utilisateur = User.query.filter(User.pseudo == pseudo).first()
-        if utilisateur and check_password_hash(utilisateur.password, password):
-            return utilisateur
-        return None
+        if not utilisateur:
+            print("Utilisateur introuvable")
+            return None
+        if not check_password_hash(utilisateur.password, password):
+            print("Mot de passe incorrect")
+            return None
+        print(f"Utilisateur authentifié : {utilisateur.pseudo}")
+        return utilisateur
