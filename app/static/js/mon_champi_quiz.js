@@ -56,3 +56,16 @@ async function sendAnswer(answer) {
         `;
     }
 }
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Fonction pour plier/déplier les sections de filtres
+    const filterHeaders = document.querySelectorAll('.filtre-section h4');
+    
+    filterHeaders.forEach(header => {
+        header.addEventListener('click', function() {
+            const options = this.nextElementSibling;
+            options.style.display = options.style.display === 'none' ? 'block' : 'none';
+            this.classList.toggle('collapsed');
+        });
+    });
+});

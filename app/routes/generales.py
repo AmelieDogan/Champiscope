@@ -1,24 +1,43 @@
 from ..app import app, db
 from flask import render_template, request, jsonify
-from sqlalchemy import text
-from sqlalchemy.orm import sessionmaker
 from ..models.champiscope_db import Referentiel, Surface, Zone, Forme, Couleur, TypeLamelle, ModeInsertion, Milieu, Habitat, MoisPousse, DescriptionChampignon, ObservationHumaine
 
 @app.route("/")
 def accueil():
-    return render_template("pages/index.html", sous_titre="Accueil")
+    # Calculer le nombre total d'espèces
+    nombre_especes = Referentiel.query.count()
+    
+    # Calculer le nombre total d'observations
+    nombre_observations = ObservationHumaine.query.count()
+    
+    return render_template(
+        'pages/index.html', 
+        sous_titre='Accueil',
+        nombre_especes=nombre_especes,
+        nombre_observations=nombre_observations,
+    )
 
 @app.route('/recherche', methods=['GET', 'POST'])
 @app.route('/recherche/<int:page>', methods=['GET', 'POST'])
 def recherche(page=1):
+    # Récupération des paramètres de base
     query = request.args.get('q', '')
-    sort_order = request.args.get('sort', 'asc')  # 'asc' par défaut
-
+    sort_order = request.args.get('sort', 'asc')
+    
+    # Récupération des filtres
+    selected_couleurs = request.args.getlist('couleur')
+    selected_formes = request.args.getlist('forme')
+    selected_lamelles = request.args.getlist('lamelle')
+    selected_milieux = request.args.getlist('milieu')
+    selected_mois = request.args.getlist('mois')
+    comestible = request.args.get('comestible', '')
+    
+    # Construction de la requête de base
     champignons_query = Referentiel.query.filter(
         Referentiel.rang == 'Espèce',
         Referentiel.est_reference == True
     )
-
+    
     # Appliquer la recherche textuelle si présente
     if query:
         champignons_query = champignons_query.filter(
@@ -28,22 +47,104 @@ def recherche(page=1):
                 Referentiel.nom_vernaculaire.ilike(f'%{query}%')
             )
         )
-
-    # Appliquer le tri choisi par l'utilisateur
+    
+    # Appliquer les filtres    
+    if selected_couleurs:
+        champignons_query = champignons_query.join(
+            Couleur, Referentiel.couleurs_associées
+        ).filter(Couleur.id.in_(selected_couleurs))
+    
+    if selected_formes:
+        champignons_query = champignons_query.join(
+            Forme, Referentiel.formes_associées
+        ).filter(Forme.id.in_(selected_formes))
+    
+    if selected_lamelles:
+        champignons_query = champignons_query.join(
+            TypeLamelle, Referentiel.types_lamelle_associés
+        ).filter(TypeLamelle.id.in_(selected_lamelles))
+    
+    if selected_milieux:
+        champignons_query = champignons_query.join(
+            Milieu, Referentiel.milieux_associés
+        ).filter(Milieu.id.in_(selected_milieux))
+    
+    if selected_mois:
+        mois_filter_conditions = []
+        mois_mapping = {
+            '1': 'janvier', '2': 'fevrier', '3': 'mars', '4': 'avril',
+            '5': 'mai', '6': 'juin', '7': 'juillet', '8': 'aout',
+            '9': 'septembre', '10': 'octobre', '11': 'novembre', '12': 'decembre'
+        }
+        
+        champignons_query = champignons_query.join(MoisPousse)
+        
+        for mois_id in selected_mois:
+            if mois_id in mois_mapping:
+                mois_column = getattr(MoisPousse, mois_mapping[mois_id])
+                mois_filter_conditions.append(mois_column == True)
+        
+        if mois_filter_conditions:
+            champignons_query = champignons_query.filter(db.or_(*mois_filter_conditions))
+    
+    if comestible:
+        champignons_query = champignons_query.join(DescriptionChampignon)
+        is_comestible = comestible.lower() == 'true'
+        champignons_query = champignons_query.filter(DescriptionChampignon.comestibilite == is_comestible)
+    
+    # Appliquer le tri
     if sort_order == 'desc':
         champignons_query = champignons_query.order_by(Referentiel.nom.desc())
     else:
         champignons_query = champignons_query.order_by(Referentiel.nom)
-
+    
+    # Éliminer les doublons potentiels dus aux jointures multiples
+    champignons_query = champignons_query.distinct()
+    
+    # Obtenir le nombre total de champignons correspondant aux critères
     nb_champi = champignons_query.count()
+    
+    # Paginer les résultats
     champignons = champignons_query.paginate(page=page, per_page=app.config["CHAMPI_PAR_PAGE"])
-
+    
+    # Récupérer toutes les options de filtres pour l'affichage
+    couleurs = Couleur.query.order_by(Couleur.couleur).all()
+    formes = Forme.query.order_by(Forme.forme).all()
+    types_lamelle = TypeLamelle.query.order_by(TypeLamelle.type_lamelle).all()
+    milieux = Milieu.query.order_by(Milieu.milieu).all()
+    
+    # Liste des mois pour le filtre saisonnier
+    mois_liste = [
+        {'id': '1', 'nom': 'Janvier'}, {'id': '2', 'nom': 'Février'}, 
+        {'id': '3', 'nom': 'Mars'}, {'id': '4', 'nom': 'Avril'},
+        {'id': '5', 'nom': 'Mai'}, {'id': '6', 'nom': 'Juin'},
+        {'id': '7', 'nom': 'Juillet'}, {'id': '8', 'nom': 'Août'},
+        {'id': '9', 'nom': 'Septembre'}, {'id': '10', 'nom': 'Octobre'},
+        {'id': '11', 'nom': 'Novembre'}, {'id': '12', 'nom': 'Décembre'}
+    ]
+    
+    # Enregistrer les filtres sélectionnés pour le template
+    selected_filters = {
+        'couleurs': selected_couleurs,
+        'formes': selected_formes,
+        'lamelles': selected_lamelles,
+        'milieux': selected_milieux,
+        'mois': selected_mois,
+        'comestible': comestible
+    }
+    
     return render_template(
         'pages/recherche.html',
         pagination=champignons,
         nb_champi=nb_champi,
         query=query,
-        sort_order=sort_order,  # Passer l'info à la template
+        sort_order=sort_order,
+        couleurs=couleurs,
+        formes=formes,
+        types_lamelle=types_lamelle,
+        milieux=milieux,
+        mois_liste=mois_liste,
+        selected_filters=selected_filters,
         sous_titre="Recherche"
     )
 
@@ -103,8 +204,7 @@ def api_observations_avec_synonymes(taxref_id):
 
 @app.route("/carte_identite/<string:taxref>")
 def champi(taxref):
-    # Récupération des données de base
-    #donnees = Referentiel.query.filter(Referentiel.taxref_id == taxref).first()
+
     donnees = Referentiel.query.get_or_404(taxref)
     
     nom_champi = donnees.nom
@@ -112,10 +212,6 @@ def champi(taxref):
     return render_template("pages/carte_identite.html", 
         sous_titre = nom_champi, 
         donnees = donnees)
-
-@app.route("/dataviz")
-def dataviz():
-    return render_template("pages/dataviz.html", sous_titre="Dataviz")
 
 @app.route("/quiz/tous_les_quiz")
 def quiz():

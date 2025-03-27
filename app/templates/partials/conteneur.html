@@ -5,9 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Champiscope - {{sous_titre}}</title>
     
-    <link rel="stylesheet" href="../static/style.css">
-
-    <script src="../static/main.js"></script>
+    <link rel="stylesheet" href="../static/css/style.css">
 
     <!-- Leaflet CSS -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
@@ -19,6 +17,10 @@
     <!-- Leaflet JavaScript -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="https://unpkg.com/leaflet.markercluster@1.4.1/dist/leaflet.markercluster.js"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+
 </head>
 <body>
 
@@ -30,7 +32,6 @@
             <a href="/recherche">Explorer</a>
             <a href="/dataviz">Dataviz</a>
             <a href="/quiz/tous_les_quiz">Quiz</a>
-            <a href="/profil">Profil</a>
             {% if current_user.is_authenticated %}
             <a href="/utilisateur/deconnexion">Déconnexion</a>
             <a href="/utilisateur/profil">Mon profil</a>

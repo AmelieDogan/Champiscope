@@ -1,17 +1,27 @@
-<form action="{{url_for('connexion')}}" method="post" name="connexion">
+<form class="formulaire-connexion" action="{{url_for('connexion')}}" method="post" name="connexion">
     {{ form.hidden_tag() }}
 
-    <div class="form-group">
-        <label for="pseudo">Pseudo de l'utilisateur</label>
-        {{ form.pseudo(class_="pseudo") }}
-        <small id="pseudo" class="form-text text-muted">Entrer le pseudo</small>
-    </div>
+    <table>
+        <tr>
+            <td>
+                <label for="pseudo">Pseudo de l'utilisateur</label>
+            </td>
+            <td>
+                {{ form.pseudo(class_="pseudo") }}<br/>
+                <small id="pseudo">Entrer le pseudo</small>
+            </td>
+        </tr>
 
-    <div class="form-group">
-        <label for="password">Mot de passe</label>
-        {{ form.password(class_="password") }}
-        <small id="password" class="form-text text-muted">Entrer un mot de passe</small>
-    </div>
+        <tr>
+            <td>
+                <label for="password">Mot de passe</label>
+            </td>
+            <td>
+                {{ form.password(class_="password") }}<br/>
+                <small id="password">Entrer un mot de passe</small>
+            </td>
+        </tr>
+    </table>
 
-    <p><input type="submit" value="Ajouter"></p>
+    <input class="btn" type="submit" value="Ajouter">
 </form>

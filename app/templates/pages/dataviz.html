@@ -2,8 +2,156 @@
 
 {% block contenu%}
 
-<h2>Dataviz</h2>
 
-<p>A compléter</p>
+<h2>Visualisations des données</h1>
+    <p>Explorez les données sur les champignons à travers différentes visualisations interactives.</p>
 
-{%endblock%}
+    <div class="dashboard">
+        <div class="card">
+            <h2>Comestibilité des champignons</h2>
+            <div class="chart-container">
+                <canvas id="comestibiliteChart"></canvas>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>Présence des champignons par mois</h2>
+            <div class="chart-container">
+                <canvas id="moisPousseChart"></canvas>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>Taille des chapeaux de champignons</h2>
+            <div id="tailleChapeauChart"></div>
+        </div>
+    </div>
+    </div>
+
+    <script>
+        // Fonction pour créer le graphique de comestibilité
+        async function createComestibiliteChart() {
+            const response = await fetch('/api/comestibilite');
+            const data = await response.json();
+
+            // Regrouper par comestibilité
+            const comestibleGroups = {};
+            data.forEach(item => {
+                if (!comestibleGroups[item.comestibilite]) {
+                    comestibleGroups[item.comestibilite] = [];
+                }
+                comestibleGroups[item.comestibilite].push(item);
+            });
+
+            const ctx = document.getElementById('comestibiliteChart').getContext('2d');
+
+            const datasets = [];
+            const labels = Object.keys(comestibleGroups);
+
+            // Créer un ensemble de données pour chaque détail
+            const allDetails = [...new Set(data.map(item => item.detail))];
+
+            allDetails.forEach((detail, index) => {
+                const backgroundColors = [
+                    'rgba(75, 192, 192, 0.7)',
+                    'rgba(255, 206, 86, 0.7)',
+                    'rgba(255, 99, 132, 0.7)',
+                    'rgba(54, 162, 235, 0.7)',
+                    'rgba(153, 102, 255, 0.7)'
+                ];
+
+                const dataset = {
+                    label: detail,
+                    backgroundColor: backgroundColors[index % backgroundColors.length],
+                    data: labels.map(label => {
+                        const items = comestibleGroups[label].filter(item => item.detail === detail);
+                        return items.length > 0 ? items[0].count : 0;
+                    })
+                };
+
+                datasets.push(dataset);
+            });
+
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: datasets
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: {
+                            stacked: true
+                        },
+                        y: {
+                            stacked: true,
+                            beginAtZero: true
+                        }
+                    },
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Comestibilité des champignons par détail'
+                        },
+                        legend: {
+                            position: 'bottom'
+                        }
+                    }
+                }
+            });
+        }
+
+        // Fonction pour créer le graphique radar des mois de pousse
+        async function createMoisPousseChart() {
+            const response = await fetch('/api/mois_pousse');
+            const data = await response.json();
+
+            const ctx = document.getElementById('moisPousseChart').getContext('2d');
+
+            new Chart(ctx, {
+                type: 'radar',
+                data: {
+                    labels: data.map(item => item.axis),
+                    datasets: [{
+                        label: 'Nombre de champignons',
+                        data: data.map(item => item.value),
+                        backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                        borderColor: 'rgba(75, 192, 192, 1)',
+                        borderWidth: 2,
+                        pointBackgroundColor: 'rgba(75, 192, 192, 1)',
+                        pointBorderColor: '#fff',
+                        pointHoverBackgroundColor: '#fff',
+                        pointHoverBorderColor: 'rgba(75, 192, 192, 1)'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        r: {
+                            beginAtZero: true
+                        }
+                    },
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Présence des champignons par mois'
+                        },
+                        legend: {
+                            position: 'bottom'
+                        }
+                    }
+                }
+            });
+        }
+
+        // Charger tous les graphiques
+        document.addEventListener('DOMContentLoaded', function () {
+            createComestibiliteChart();
+            createMoisPousseChart();
+        });
+    </script>
+
+    {%endblock%}

@@ -5,8 +5,8 @@
 {% block contenu %}
 
 <div class="recherche-container">
-    <h1>Recherche de champignons</h1>
-    
+    <h2>Recherche de champignons</h2>
+
     <!-- Barre de recherche rapide -->
     <div class="search-bar">
         <form action="{{ url_for('recherche') }}" method="GET">
@@ -20,18 +20,116 @@
             <input type="hidden" name="q" value="{{ query }}">
             <label for="sort">Trier par :</label>
             <select name="sort" id="sort" onchange="this.form.submit()">
-                <option value="asc" {% if sort_order == 'asc' %}selected{% endif %}>Nom (A-Z)</option>
-                <option value="desc" {% if sort_order == 'desc' %}selected{% endif %}>Nom (Z-A)</option>
+                <option value="asc" {% if sort_order=='asc' %}selected{% endif %}>Nom (A-Z)</option>
+                <option value="desc" {% if sort_order=='desc' %}selected{% endif %}>Nom (Z-A)</option>
             </select>
         </form>
     </div>
-    
+
     <div class="recherche-content">
         <!-- Panneau des filtres -->
         <div class="filtres-panel">
-            
+            <h3>Filtres</h3>
+            <form id="filtres-form" method="GET" action="{{ url_for('recherche') }}">
+                <input type="hidden" name="q" value="{{ query }}">
+                <input type="hidden" name="sort" value="{{ sort_order }}">
+
+                <!-- Filtres par caractéristiques -->
+                <div class="filtre-section">
+                    <h4>Couleurs</h4>
+                    <div class="filtre-options">
+                        {% for couleur in couleurs %}
+                        <div class="filtre-option">
+                            <input type="checkbox" id="couleur-{{ couleur.id }}" name="couleur" value="{{ couleur.id }}"
+                                {% if couleur.id|string in selected_filters.couleurs %}checked{% endif %}>
+                            <label for="couleur-{{ couleur.id }}">{{ couleur.couleur }}</label>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <div class="filtre-section">
+                    <h4>Forme</h4>
+                    <div class="filtre-options">
+                        {% for forme in formes %}
+                        <div class="filtre-option">
+                            <input type="checkbox" id="forme-{{ forme.id }}" name="forme" value="{{ forme.id }}" {% if
+                                forme.id|string in selected_filters.formes %}checked{% endif %}>
+                            <label for="forme-{{ forme.id }}">{{ forme.forme }}</label>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <div class="filtre-section">
+                    <h4>Type de lamelles</h4>
+                    <div class="filtre-options">
+                        {% for type_lamelle in types_lamelle %}
+                        <div class="filtre-option">
+                            <input type="checkbox" id="lamelle-{{ type_lamelle.id }}" name="lamelle"
+                                value="{{ type_lamelle.id }}" {% if type_lamelle.id|string in selected_filters.lamelles
+                                %}checked{% endif %}>
+                            <label for="lamelle-{{ type_lamelle.id }}">{{ type_lamelle.type_lamelle }}</label>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <div class="filtre-section">
+                    <h4>Milieu</h4>
+                    <div class="filtre-options">
+                        {% for milieu in milieux %}
+                        <div class="filtre-option">
+                            <input type="checkbox" id="milieu-{{ milieu.id }}" name="milieu" value="{{ milieu.id }}" {%
+                                if milieu.id|string in selected_filters.milieux %}checked{% endif %}>
+                            <label for="milieu-{{ milieu.id }}">{{ milieu.milieu }}</label>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <div class="filtre-section">
+                    <h4>Saison</h4>
+                    <div class="filtre-options">
+                        {% for mois in mois_liste %}
+                        <div class="filtre-option">
+                            <input type="checkbox" id="mois-{{ mois.id }}" name="mois" value="{{ mois.id }}" {% if
+                                mois.id|string in selected_filters.mois %}checked{% endif %}>
+                            <label for="mois-{{ mois.id }}">{{ mois.nom }}</label>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <div class="filtre-section">
+                    <h4>Comestibilité</h4>
+                    <div class="filtre-options">
+                        <div class="filtre-option">
+                            <input type="radio" id="comestible-all" name="comestible" value="" {% if
+                                selected_filters.comestible=='' %}checked{% endif %}>
+                            <label for="comestible-all">Tous</label>
+                        </div>
+                        <div class="filtre-option">
+                            <input type="radio" id="comestible-yes" name="comestible" value="true" {% if
+                                selected_filters.comestible=='true' %}checked{% endif %}>
+                            <label for="comestible-yes">Comestible</label>
+                        </div>
+                        <div class="filtre-option">
+                            <input type="radio" id="comestible-no" name="comestible" value="false" {% if
+                                selected_filters.comestible=='false' %}checked{% endif %}>
+                            <label for="comestible-no">Non comestible</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="filtre-actions">
+                    <button type="submit">Appliquer les filtres</button>
+                    <button type="button"
+                        onclick="window.location='{{ url_for('recherche') }}'">Réinitialiser</button>
+                </div>
+            </form>
         </div>
-        
+
         <!-- Résultats de recherche -->
         <div class="resultats-panel">
             {%if nb_champi%}
@@ -41,15 +139,15 @@
             {{ pagination_macro('recherche', pagination.page) }}
 
             {%if pagination%}
-                <div class="resultats-grid">
-                    {% for champignon in pagination.items %}
-                        {% include 'partials/carte_champignon.html' %}
-                    {% endfor %}
-                </div>
+            <div class="resultats-grid">
+                {% for champignon in pagination.items %}
+                {% include 'partials/carte_champignon.html' %}
+                {% endfor %}
+            </div>
             {% else %}
-                <div class="no-results">
-                    <p>Aucun champignon ne correspond à votre recherche.</p>
-                </div>
+            <div class="no-results">
+                <p>Aucun champignon ne correspond à votre recherche.</p>
+            </div>
             {% endif %}
         </div>
     </div>

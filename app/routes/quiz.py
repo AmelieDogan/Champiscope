@@ -1,6 +1,8 @@
-from ..app import app
+from ..app import app, db
 from flask import Flask, render_template, request, session, jsonify
-from ..models.champiscope_db import Referentiel, DescriptionChampignon
+from ..models.champiscope_db import Referentiel, DescriptionChampignon, Iconographie
+
+import random as rd
 
 questions_mon_champi = [
     {
@@ -114,7 +116,6 @@ questions_mon_champi = [
 ]
 
 # Définition des champignons et leurs descriptions
-# Dans quiz.py, remplacez la définition des champignons par:
 champignons = {
     1: {
         "nom": "Cèpe de Bordeaux (Le Sage Indépendant)",
@@ -205,3 +206,59 @@ def next_question():
 
 if __name__ == "__main__":
     app.run(debug=True)
+
+@app.route("/quiz/comestible")
+def quiz_comestible():
+    return render_template("pages/quiz/comestible.html", 
+                           sous_titre="Es-tu un expert en comestibilité ?")
+
+@app.route("/quiz/comestible/data")
+def get_quiz_data():
+    # Sélectionner les champignons qui ont au moins une image et une information de comestibilité
+    champignons_avec_images_et_comestibilite = (
+        db.session.query(
+            Referentiel, DescriptionChampignon, Iconographie
+        )
+        .join(DescriptionChampignon, Referentiel.taxref_id == DescriptionChampignon.taxref_id)
+        .join(Iconographie, Referentiel.taxref_id == Iconographie.taxref_id)
+        .filter(DescriptionChampignon.comestibilite != None)
+        .all()
+    )
+    
+    # Regrouper par taxref_id pour éviter les doublons dus aux multiples images
+    champignons_groupes = {}
+    for ref, desc, icon in champignons_avec_images_et_comestibilite:
+        if ref.taxref_id not in champignons_groupes:
+            champignons_groupes[ref.taxref_id] = {
+                "taxref_id": ref.taxref_id,
+                "nom": ref.nom,
+                "nom_vernaculaire": ref.nom_vernaculaire,
+                "comestible": desc.comestibilite,
+                "image_url": icon.url_image
+            }
+    
+    # Convertir en liste
+    champignons_liste = list(champignons_groupes.values())
+    
+    # Séparer en comestibles et non comestibles
+    comestibles = [c for c in champignons_liste if c["comestible"]]
+    non_comestibles = [c for c in champignons_liste if not c["comestible"]]
+    
+    # Déterminer le nombre de champignons comestibles à inclure (entre 3 et 8)
+    nb_comestibles = rd.randint(3, min(8, len(comestibles)))
+    nb_non_comestibles = 15 - nb_comestibles
+    
+    # S'assurer qu'il y a assez de champignons non comestibles
+    if len(non_comestibles) < nb_non_comestibles:
+        nb_non_comestibles = len(non_comestibles)
+        nb_comestibles = 15 - nb_non_comestibles
+    
+    # Sélectionner aléatoirement les champignons
+    selected_comestibles = rd.sample(comestibles, nb_comestibles)
+    selected_non_comestibles = rd.sample(non_comestibles, nb_non_comestibles)
+    
+    # Combiner et mélanger les questions
+    questions = selected_comestibles + selected_non_comestibles
+    rd.shuffle(questions)
+    
+    return jsonify({"questions": questions})

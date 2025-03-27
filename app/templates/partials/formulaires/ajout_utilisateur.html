@@ -1,23 +1,37 @@
-<form action="{{url_for('ajout_utilisateur')}}" method="post" name="ajout_utilisateur">
+<form class="formulaire-connexion" action="{{url_for('ajout_utilisateur')}}" method="post" name="ajout_utilisateur">
     {{ form.hidden_tag() }}
 
-    <div class="form-group">
-        <label for="pseudo">Preudo de l'utilisateur</label>
-        {{ form.pseudo(class_="pseudo") }}
-        <small id="pseudo" class="form-text text-muted">Entrer le pseudo de l'utilisateur</small>
-    </div>
+    <table>
+        <tr>
+            <td>
+                <label for="pseudo">Pseudo de l'utilisateur</label>
+            </td>
+            <td>
+                {{ form.pseudo(class_="pseudo") }}<br />
+                <small id="pseudo">Entrer le pseudo de l'utilisateur</small>
+            </td>
+        </tr>
 
-    <div class="form-group">
-        <label for="mail">Mail de l'utilisateur</label>
-        {{ form.mail(class_="mail") }}
-        <small id="mail" class="form-text text-muted">Entrer l'adresse mail de l'utilisateur</small>
-    </div>
+        <tr>
+            <td>
+                <label for="mail">Mail de l'utilisateur</label>
+            </td>
+            <td>
+                {{ form.mail(class_="mail") }}<br />
+                <small id="mail">Entrer l'adresse mail de l'utilisateur</small>
+            </td>
+        </tr>
 
-    <div class="form-group">
-        <label for="password">Mot de passe</label>
-        {{ form.password(class_="mot de passe") }}
-        <small id="password" class="form-text text-muted">Entrer un mot de passe</small>
-    </div>
+        <tr>
+            <td>
+                <label for="password">Mot de passe</label>
+            </td>
+            <td>
+                {{ form.password(class_="mot de passe") }}<br />
+                <small id="password">Entrer un mot de passe</small>
+            </td>
+        </tr>
+    </table>
 
-    <p><input type="submit" value="Ajouter"></p>
+    <input class="btn" type="submit" value="Ajouter">
 </form>

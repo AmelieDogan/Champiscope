@@ -1,7 +1,7 @@
 <div class="carte-champignon">
     <a href="{{ url_for('champi', taxref=champignon.taxref_id) }}">
         {% if champignon.iconographies and champignon.iconographies|length > 0 %}
-            <img class="img-carte-champi" src="{{ champignon.iconographies[0].url_image }}" alt="{{ champignon.nom_vernaculaire or champignon.nom }}">
+            <img class="img-carte-champi" src="{{ champignon.iconographies[0].url_image }}" loading="lazy"  referrerpolicy="no-referrer" alt="{{ champignon.nom_vernaculaire or champignon.nom }}">
         {% else %}
             <div class="absence-image"><p>Pas d'image disponible</p></div>
         {% endif %}

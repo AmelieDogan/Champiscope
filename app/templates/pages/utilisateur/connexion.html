@@ -2,25 +2,9 @@
 
 {% block contenu %}
 
-<div class="container">
-
-    <div class="row">
-        <div class="col-sm-2"></div>
-        <div class="col-sm-8">
-
-            <h3 data-toggle="collapse" data-target="#collapseExample" aria-expanded="false"
-                aria-controls="collapseExample">
-                Se connecter <i class="fa-solid fa-caret-down"></i>
-        </h3>
-            <div class="collapse show" id="collapseExample">
-                <div class="card card-body">
-                    {% include "partials/formulaires/connexion.html" %}
-                </div>
-            </div>
-        </div>
-        <div class="col-sm-2"></div>
-    </div>
-
+<h3>Se connecter</h3>
+<div class="connexion">
+    {% include "partials/formulaires/connexion.html" %}
 </div>
 
 {% endblock %}

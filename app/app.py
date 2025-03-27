@@ -10,4 +10,4 @@ db = SQLAlchemy(app)
 
 login = LoginManager(app)
 
-from .routes import generales, quiz, connexion
+from .routes import generales, quiz, connexion, dataviz

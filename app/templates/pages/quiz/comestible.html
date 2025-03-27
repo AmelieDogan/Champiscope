@@ -2,13 +2,41 @@
 
 {% block contenu%}
 <div id="quiz-container">
-    <h2>Ce champignon est-il commestible ?</h2>
-    <h3 id="question-text">{{ question }}</h3>
-    <div id="buttons">
-        {% for choice in choices %}
-        <button class="answer-button" onclick="sendAnswer('{{ choice }}')">{{ choice }}</button>
-        {% endfor %}
+    <h2>Es-tu un expert en comestibilité ?</h2>
+    <div id="progress-bar">
+        <div id="progress-fill"></div>
+        <div id="progress-text">Question 1/15</div>
+    </div>
+    
+    <div id="question-container">
+        <h3 id="question-text">Ce champignon est-il comestible ?</h3>
+        <div id="champignon-info">
+            <h4 id="champignon-nom"></h4>
+            <p id="champignon-nom-vernaculaire"></p>
+            <div id="champignon-image">
+                <img src="" alt="Image du champignon" id="question-image">
+            </div>
+        </div>
+        
+        <div id="answer-buttons">
+            <button class="answer-button" id="btn-comestible" onclick="checkAnswer(true)">Comestible</button>
+            <button class="answer-button" id="btn-non-comestible" onclick="checkAnswer(false)">Non comestible</button>
+        </div>
+        
+        <div id="feedback" style="display: none;">
+            <p id="feedback-text"></p>
+            <button id="next-button" onclick="nextQuestion()">Question suivante</button>
+        </div>
+    </div>
+    
+    <div id="results-container" style="display: none;">
+        <h3>Résultats</h3>
+        <p id="score-text"></p>
+        <div id="results-summary"></div>
+        <button class="restart-button" onclick="restartQuiz()">Refaire le quiz</button>
+        <a href="/quiz/tous_les_quiz" class="btn-quiz">Retour aux quiz</a>
     </div>
 </div>
 
+<script src="../../../static/js/comestible_quiz.js"></script>
 {%endblock%}

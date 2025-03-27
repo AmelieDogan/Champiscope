@@ -102,3 +102,74 @@
     </script>
 </div>
 {% endmacro %}
+
+{% macro carte_observations_globale() %}
+<div class="carte-container">
+    <div id="map-global" style="height: 600px; width: 100%;"></div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialisation de la carte Leaflet          
+            var map = L.map('map-global').setView([46.603354, 1.888334], 5); // Centre sur la France
+            
+            // Ajout du fond de carte
+            L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}', {
+                attribution: 'Tiles &copy; Esri &mdash; Esri, DeLorme, NAVTEQ, TomTom, Intermap, iPC, USGS, FAO, NPS, NRCAN, GeoBase, Kadaster NL, Ordnance Survey, Esri Japan, METI, Esri China (Hong Kong), and the GIS User Community',
+            }).addTo(map);
+            
+            // Récupération des données d'observations globales
+            fetch('/api/toutes_observations')
+                .then(response => response.json())
+                .then(data => {
+                    // Si aucune observation, afficher un message
+                    if (Object.keys(data).length === 0) {
+                        document.getElementById('map-global').innerHTML = '<div class="no-data-message" style="padding: 20px; text-align: center;">Aucune observation disponible</div>';
+                        return;
+                    }
+                    
+                    // Création des groupes de marqueurs
+                    var allMarkers = L.markerClusterGroup();
+                    
+                    // Pour chaque taxon de référence
+                    Object.keys(data).forEach(function(taxonId) {
+                        var taxonName = data[taxonId].nom;
+                        var observations = data[taxonId].observations;
+                        
+                        // Création des marqueurs pour ce taxon
+                        observations.forEach(function(obs) {
+                            var markerIcon = L.divIcon({
+                                html: `<div style="background-color: #5f573f; width:10px; height:10px; border-radius:50%; border:2px solid white;"></div>`,
+                                className: 'custom-marker',
+                                iconSize: [14, 14],
+                                iconAnchor: [7, 7]
+                            });
+                            
+                            var marker = L.marker([obs.latitude_decimale, obs.longitude_decimale], {icon: markerIcon});
+                            
+                            // Création du popup avec les informations de l'observation
+                            var popupContent = `
+                                <strong>${taxonName}</strong><br>
+                                Date: ${obs.jour || '??'}/${obs.mois || '??'}/${obs.annee || '????'}<br>
+                                ${obs.identifie_par ? 'Identifié par: ' + obs.identifie_par : ''}
+                            `;
+                            
+                            marker.bindPopup(popupContent);
+                            allMarkers.addLayer(marker);
+                        });
+                    });
+                    
+                    map.addLayer(allMarkers);
+                    
+                    // Ajuster la vue pour montrer toutes les observations
+                    if (allMarkers.getLayers().length > 0) {
+                        map.fitBounds(allMarkers.getBounds(), { padding: [30, 30] });
+                    }
+                })
+                .catch(error => {
+                    console.error('Erreur lors du chargement des observations:', error);
+                    document.getElementById('map-global').innerHTML = '<div class="error-message" style="padding: 20px; text-align: center; color: red;">Erreur lors du chargement des observations</div>';
+                });
+        });
+    </script>
+</div>
+{% endmacro %}
