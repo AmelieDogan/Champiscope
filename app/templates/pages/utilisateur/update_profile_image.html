@@ -1,0 +1,68 @@
+{% extends "partials/conteneur.html" %}
+
+{% block contenu %}
+<section>
+    <h2>Changer ma photo de profil</h2>
+    <div>
+        <!-- Formulaire pour sélectionner une nouvelle image -->
+        <form action="{{ url_for('update_profile_image') }}" method="POST">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="profile_image" id="champi1" value="champi_1.jpg"
+                      {% if current_user.profile_image == 'champi_1.jpg' %}checked{% endif %} hidden>
+                <label class="form-check-label" for="champi1" onclick="selectImage('champi1')">
+                    <img src="{{ url_for('static', filename='img/champi_1.jpg') }}" alt="Champignon 1" 
+                         class="img-thumbnail profile-img" id="img_champi1">
+                </label>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="profile_image" id="champi2" value="champi_2.jpg"
+                      {% if current_user.profile_image == 'champi_2.jpg' %}checked{% endif %} hidden>
+                <label class="form-check-label" for="champi2" onclick="selectImage('champi2')">
+                    <img src="{{ url_for('static', filename='img/champi_2.jpg') }}" alt="Champignon 2" 
+                         class="img-thumbnail profile-img" id="img_champi2">
+                </label>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="profile_image" id="champi3" value="champi_3.jpg"
+                      {% if current_user.profile_image == 'champi_3.jpg' %}checked{% endif %} hidden>
+                <label class="form-check-label" for="champi3" onclick="selectImage('champi3')">
+                    <img src="{{ url_for('static', filename='img/champi_3.jpg') }}" alt="Champignon 3" 
+                         class="img-thumbnail profile-img" id="img_champi3">
+                </label>
+            </div>
+
+            <button type="submit" class="btn btn-primary mt-3">Enregistrer</button>
+        </form>
+    </div>
+</section>
+
+<!-- JavaScript -->
+<script>
+function selectImage(id) {
+    // Désélectionner toutes les images
+    document.querySelectorAll('.profile-img').forEach(img => {
+        img.style.border = 'none';  // Supprime la bordure des autres images
+    });
+
+    // Sélectionner l'image cliquée
+    document.querySelector("input[id=" + id + "]").checked = true;  // Coche l'input radio caché
+    document.getElementById('img_' + id).style.border = '4px solid blue';  // Ajoute une bordure bleue à l'image sélectionnée
+}
+</script>
+
+<!-- CSS -->
+<style>
+.profile-img {
+    width: 120px;
+    height: 120px;
+    object-fit: cover;
+    cursor: pointer;
+    transition: border 0.3s ease-in-out;
+}
+</style>
+
+{% endblock %}
+
+

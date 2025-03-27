@@ -1,6 +1,17 @@
 from ..app import app, db
-from flask import render_template, request, jsonify
+from flask import render_template, request, jsonify, flash, redirect, url_for
+from sqlalchemy import text
+from flask_login import current_user, login_required
+from werkzeug.security import check_password_hash, generate_password_hash
+from sqlalchemy.orm import sessionmaker
 from ..models.champiscope_db import Referentiel, Surface, Zone, Forme, Couleur, TypeLamelle, ModeInsertion, Milieu, Habitat, MoisPousse, DescriptionChampignon, ObservationHumaine
+from ..models.users import User
+
+# Récupérer les likes de l'utilisateur
+def get_user_likes(user_id):
+    # Récupère l'utilisateur avec son id et ses likes
+    user = User.query.get(user_id)
+    return user.likes
 
 @app.route("/")
 def accueil():
@@ -204,6 +215,7 @@ def api_observations_avec_synonymes(taxref_id):
 
 @app.route("/carte_identite/<string:taxref>")
 def champi(taxref):
+    # Récupération des données de base
 
     donnees = Referentiel.query.get_or_404(taxref)
     
@@ -217,9 +229,10 @@ def champi(taxref):
 def quiz():
     return render_template("pages/quiz/tous_les_quiz.html", sous_titre="Tous les quiz")
 
-@app.route("/utilisateur/profil.html")
+@app.route('/utilisateur/profil')
 def profil():
-    return render_template("pages/utilisateur/profil.html", sous_titre="Mon profil")
+    user_likes = get_user_likes(current_user.id)  # Récupérer champis likés pour les afficher sur le profil
+    return render_template('pages/utilisateur/profil.html', user_likes=user_likes)
 
 @app.route("/a_propos")
 def a_propos():
@@ -232,3 +245,48 @@ def mentions_legales():
 @app.route("/remerciements")
 def remerciements():
     return render_template("pages/remerciements.html", sous_titre="Remerciements")
+
+@app.route('/utilisateur/update_profile_image', methods=['GET', 'POST'])
+def update_profile_image(): # Changer de photo de profil
+    if request.method == 'POST':
+        # Récupérer l'image sélectionnée dans le formulaire
+        new_image = request.form.get('profile_image')
+
+        if new_image and new_image in ['champi_1.jpg', 'champi_2.jpg', 'champi_3.jpg']:
+            # Mettre à jour le nom de l'image de profil dans la base de données
+            current_user.profile_image = new_image
+            db.session.commit()  # Sauvegarder les changements dans la base de données
+
+            flash("Votre photo de profil a été mise à jour.", "success")
+        else:
+            flash("Veuillez sélectionner une image valide.", "danger")
+
+        return redirect(url_for('profil'))
+
+    return render_template('pages/utilisateur/update_profile_image.html')
+
+@app.route('/update_password', methods=['POST'])
+@login_required
+def update_password(): # Changer de mot de passe
+    current_password = request.form.get('current_password')
+    new_password = request.form.get('new_password')
+    confirm_password = request.form.get('confirm_password')
+
+    # Vérifier si le mot de passe actuel est correct
+    if not check_password_hash(current_user.password, current_password):
+        flash("Mot de passe actuel incorrect.", "danger")
+        return redirect(url_for('profil'))  # Redirection vers la page profil
+
+    # Vérifier si les nouveaux mots de passe correspondent
+    if new_password != confirm_password:
+        flash("Les nouveaux mots de passe ne correspondent pas.", "danger")
+        return redirect(url_for('profil'))
+
+    # Hacher et enregistrer le nouveau mot de passe
+    current_user.password = generate_password_hash(new_password)
+    db.session.commit()
+
+    flash("Votre mot de passe a été mis à jour avec succès.", "success")
+    return redirect(url_for('profil'))
+
+

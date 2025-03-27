@@ -6,7 +6,7 @@ from ..models.formulaires import AjoutUtilisateur, Connexion
 from flask_login import login_user, current_user, logout_user
 
 @app.route("/utilisateur/inscription", methods=["GET", "POST"])
-def ajout_utilisateur():
+def ajout_utilisateur(): # Ajouter un utilisateur
 
     form = AjoutUtilisateur()
 
@@ -19,22 +19,22 @@ def ajout_utilisateur():
         )
         if statut is True:
             flash("Ajout effectué", "success")
-            return redirect(url_for("connexion"))
+            return redirect(url_for("connexion")) # Rediriger vers connexion une fois l'utilisateur créé
         else:
             flash(",".join(donnees), "error")
-            return render_template("pages/utilisateur/ajout_utilisateur.html", form=form)
+            return render_template("pages/utilisateur/ajout_utilisateur.html", form=form) # Rediriger vers page ajout utilisateur si cela n'a pas fonctionné
     else:
         return render_template("pages/utilisateur/ajout_utilisateur.html", form=form)
 
 @app.route("/utilisateur/connexion", methods= ["GET", "POST"])
 #@staticmethod
-def connexion():
+def connexion(): # Se connecter
 
     form = Connexion()
 
     if current_user.is_authenticated is True:
             flash("Vous êtes déjà connecté", "info")
-            return redirect(url_for("accueil"))
+            return redirect(url_for("accueil")) # Rediriger vers accueil si connexion déjà effectuée
 
     if form.validate_on_submit():
         utilisateur = User.identification(
@@ -44,13 +44,13 @@ def connexion():
         if utilisateur:
             flash("Connexion effectuée", "success")
             login_user(utilisateur)
-            return redirect(url_for("accueil"))
+            return redirect(url_for("accueil")) # Rediriger vers accueil si connexion effectuée 
         else:
             flash("Les identifiants n'ont pas été reconnus", "error")
-            return render_template("pages/utilisateur/connexion.html", form=form)
+            return render_template("pages/utilisateur/connexion.html", form=form) # Rediriger vers connexion si les identifiants sont incorrects
 
     else:
-            return render_template("pages/utilisateur/connexion.html", form=form)
+            return render_template("pages/utilisateur/connexion.html", form=form) # Rediriger vers connexion si cela n'a pas fonctionné
     
 @app.route("/utilisateur/deconnexion", methods=["POST", "GET"])
 def deconnexion():
