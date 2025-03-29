@@ -101,9 +101,9 @@ class Referentiel(db.Model):
         secondaryjoin=(taxon_superieur.c.taxsup_id == taxref_id),
         backref=db.backref('taxon_parent_de', lazy='dynamic'), lazy='dynamic')
     
-    surfaces_associées = db.relationship("Surface", secondary=surface_champi, back_populates="referentiels")
-    formes_associées = db.relationship("Forme", secondary=forme_champi, back_populates="referentiels")
-    couleurs_associées = db.relationship("Couleur", secondary=couleur_champi, back_populates="referentiels")
+    surfaces_associées = db.relationship("Surface", secondary=surface_champi, backref="referentiels")
+    formes_associées = db.relationship("Forme", secondary=forme_champi, backref="referentiels")
+    couleurs_associées = db.relationship("Couleur", secondary=couleur_champi, backref="referentiels")
 
     def __repr__(self):
         return '<Referentiel %r>' % (self.name) 
@@ -113,8 +113,7 @@ class Surface(db.Model):
     id = db.Column(db.Integer, primary_key = True, unique=True)
     surface = db.Column(db.String(250))
 
-    zones = db.relationship("Zone", secondary=surface_champi, back_populates="surfaces")
-    referentiels = db.relationship("Referentiel", secondary=surface_champi, back_populates="surfaces_associées")
+    zones = db.relationship("Zone", secondary=surface_champi, viewonly=True, backref="surfaces")
 
     def __repr__(self):
         return '<Surface %r>' % (self.name) 
@@ -123,10 +122,6 @@ class Zone(db.Model):
     __tablename__="zone"
     id = db.Column(db.String(25), primary_key = True, unique=True)
     zone = db.Column(db.String(250))
-
-    surfaces = db.relationship("Surface", secondary=surface_champi, back_populates="zones")
-    formes = db.relationship("Forme", secondary=forme_champi, back_populates="zones")
-    couleurs = db.relationship("Couleur", secondary=couleur_champi, back_populates="zones")
 
     def __lt__(self, other):
         return self.zone < other.zone  # Comparaison basée sur le nom de la zone
@@ -139,8 +134,7 @@ class Forme(db.Model):
     id = db.Column(db.Integer, primary_key = True, unique=True)
     forme = db.Column(db.String(250))
 
-    zones = db.relationship("Zone", secondary=forme_champi, back_populates="formes")
-    referentiels = db.relationship("Referentiel", secondary=forme_champi, back_populates="formes_associées")
+    zones = db.relationship("Zone", secondary=forme_champi, viewonly=True, backref="formes")
 
     def __repr__(self):
         return '<Forme %r>' % (self.name) 
@@ -150,8 +144,7 @@ class Couleur(db.Model):
     id = db.Column(db.Integer, primary_key = True, unique=True)
     couleur = db.Column(db.String(250))
 
-    zones = db.relationship("Zone", secondary=couleur_champi, back_populates="couleurs")
-    referentiels = db.relationship("Referentiel", secondary=couleur_champi, back_populates="couleurs_associées")
+    zones = db.relationship("Zone", secondary=couleur_champi, viewonly=True, backref="couleurs")
     
     def __repr__(self):
         return '<Couleur %r>' % (self.name) 
