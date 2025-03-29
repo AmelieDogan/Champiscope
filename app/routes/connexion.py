@@ -26,31 +26,33 @@ def ajout_utilisateur(): # Ajouter un utilisateur
     else:
         return render_template("pages/utilisateur/ajout_utilisateur.html", form=form)
 
-@app.route("/utilisateur/connexion", methods= ["GET", "POST"])
-#@staticmethod
-def connexion(): # Se connecter
-
+@app.route("/utilisateur/connexion", methods=["GET", "POST"])
+def connexion():
     form = Connexion()
 
-    if current_user.is_authenticated is True:
-            flash("Vous êtes déjà connecté", "info")
-            return redirect(url_for("accueil")) # Rediriger vers accueil si connexion déjà effectuée
+    if current_user.is_authenticated:
+        flash("Vous êtes déjà connecté", "info")
+        return redirect(url_for("accueil"))
 
-    if form.validate_on_submit():
-        utilisateur = User.identification(
-        pseudo=(request.form.get("pseudo", None)),
-        password=(request.form.get("password", None))
+    if request.method == "POST":
+        if form.validate_on_submit():  # Vérifie la validation du formulaire
+            utilisateur = User.identification(
+                pseudo=request.form.get("pseudo"),
+                password=request.form.get("password")
             )
-        if utilisateur:
-            flash("Connexion effectuée", "success")
-            login_user(utilisateur)
-            return redirect(url_for("accueil")) # Rediriger vers accueil si connexion effectuée 
-        else:
-            flash("Les identifiants n'ont pas été reconnus", "error")
-            return render_template("pages/utilisateur/connexion.html", form=form) # Rediriger vers connexion si les identifiants sont incorrects
 
-    else:
-            return render_template("pages/utilisateur/connexion.html", form=form) # Rediriger vers connexion si cela n'a pas fonctionné
+            if utilisateur:
+                flash("Connexion effectuée", "success")
+                login_user(utilisateur)
+                return redirect(url_for("accueil"))
+            else:
+                flash("Les identifiants n'ont pas été reconnus", "danger") 
+
+        else:
+            flash("Erreur de validation du formulaire", "warning")
+
+    return render_template("pages/utilisateur/connexion.html", form=form)  # Toujours renvoyer vers la page connexion
+
     
 @app.route("/utilisateur/deconnexion", methods=["POST", "GET"])
 def deconnexion():
@@ -58,5 +60,3 @@ def deconnexion():
         logout_user()
     flash("Vous êtes déconnecté", "info")
     return redirect(url_for("accueil"))
-
-#login.login_view = 'connexion'

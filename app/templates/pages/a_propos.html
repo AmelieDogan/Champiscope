@@ -3,8 +3,7 @@
 {% block contenu%}
 
 <section class="about-section">
-    <div class="container">
-        <h2 class="text-center">À propos</h2>
+        <h2>À propos</h2>
         <p>
             Le site <strong>Champiscope</strong> a été réalisé dans le cadre des cours de traitement de la donnée et de développement web à l'École nationale des chartes. 
             Il a été entièrement conçu et développé par une équipe de trois étudiants passionnés par la nature et le patrimoine.
@@ -14,7 +13,7 @@
             qu’ils soient simples curieux, amateurs ou mycologues en herbe.
         </p>
 
-        <h3 class="text-center">Que propose <span>Champiscope</span> ?</h3>
+        <h3>Que propose <span>Champiscope</span> ?</h3>
         <ul>
             <li>Une <strong>base de données</strong> dédiée aux champignons français.</li>
             <li>Une <strong>carte interactive</strong> des observations de champignons en France.</li>
@@ -22,11 +21,8 @@
             <li>Deux <strong>quiz interactifs</strong> pour découvrir son champignon totem et tester ses connaissances sur la comestibilité des champignons.</li>
         </ul>
 
-        <h3 class="text-center">Qui sommes-nous ?</h3>
-        <p>
-            Nous sommes trois étudiants du <strong>Master 2 Archives - Technologies numériques appliquées à l'histoire</strong> de l'École nationale des chartes.
-        </p>
-        <div>
+        <h3>Qui sommes-nous ?</h3>
+        <div class="team-section">
             <div>
                 <h4>Amélie Dogan</h4>
                 <p>Responsable gestion du projet et pilotage de la réalisation technique.</p>
@@ -41,26 +37,27 @@
             </div>
         </div>
 
-        <h3 class="text-center">Sources</h3>
-        <p>La base de données Champiscope a été realisée à partir de données récupérées depuis les ressources suivantes :</p>
-        <div>
-            <h4>Données du site identifier-les-champignons.com</h4>
-            <p><a href="https://www.data.gouv.fr/en/datasets/donnees-du-site-identifier-les-champignons-com/">Récupération de données sur les champignons et leurs caractéristiques.</a></p>
-        </div>
-        <div>
-            <h4>Wikidata</h4>
-            <p><a href="https://www.wikidata.org/wiki/Wikidata:Main_Page">Récupération des taxons parents et des photos associées.</a></p>
-        </div>
-        <div>
-            <h4>Inventaire national du patrimoine naturel</h4>
-            <p><a href="https://inpn.mnhn.fr/telechargement/referentielEspece/taxref/18.0/menu#">Récupération de l'intégralité de la base de données TAXREF.</a></p>
-            <p><a href="https://inpn.mnhn.fr/espece/listerouge/FR/Champignons_metropole_bolets_lactaires_tricholomes_2024">Récupération de la liste rouge des champignons en danger.</a></p>
-        </div>
-        <div>
-            <h4>Global Biodiversity Information Facility</h4>
-            <p><a href="https://www.gbif.org/occurrence/search?country=FR&taxon_key=5">Récupération de données sur l'occurrence des obserations de champignons en France.</a></p>
-        </div>
+        <h3>Ressources utilisées</h3>
+        <div class="sources-section">
+            <div>
+                <h4>Données du site identifier-les-champignons.com</h4>
+                <p><a href="https://www.data.gouv.fr/en/datasets/donnees-du-site-identifier-les-champignons-com/">Récupération de données sur les champignons et leurs caractéristiques.</a></p>
+            </div>
+            <div>
+                <h4>Wikidata</h4>
+                <p><a href="https://www.wikidata.org/wiki/Wikidata:Main_Page">Récupération des taxons parents et des photos associées.</a></p>
+            </div>
+            <div>
+                <h4>Inventaire national du patrimoine naturel</h4>
+                <p><a href="https://inpn.mnhn.fr/telechargement/referentielEspece/taxref/18.0/menu#">Récupération de l'intégralité de la base de données TAXREF.</a></p>
+                <p><a href="https://inpn.mnhn.fr/espece/listerouge/FR/Champignons_metropole_bolets_lactaires_tricholomes_2024">Récupération de la liste rouge des champignons en danger.</a></p>
+            </div>
+            <div>
+                <h4>Global Biodiversity Information Facility</h4>
+                <p><a href="https://www.gbif.org/occurrence/search?country=FR&taxon_key=5">Récupération de données sur l'occurrence des observations de champignons en France.</a></p>
+            </div>
     </div>
 </section>
 
 {%endblock%}
+
