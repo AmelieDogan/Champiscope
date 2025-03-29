@@ -1,11 +1,11 @@
 from ..app import app, db
-from flask import render_template, request, jsonify, flash, redirect, url_for
+from flask import render_template, request, jsonify, flash, redirect, url_for, session
 from sqlalchemy import text
 from flask_login import current_user, login_required
 from werkzeug.security import check_password_hash, generate_password_hash
 from sqlalchemy.orm import sessionmaker
 from ..models.champiscope_db import Referentiel, Surface, Zone, Forme, Couleur, TypeLamelle, ModeInsertion, Milieu, Habitat, MoisPousse, DescriptionChampignon, ObservationHumaine
-from ..models.users import User
+from ..models.users import User, user_likes
 
 # Récupérer les likes de l'utilisateur
 def get_user_likes(user_id):
@@ -116,6 +116,12 @@ def champi(taxref):
     donnees = Referentiel.query.get_or_404(taxref)
     
     nom_champi = donnees.nom
+
+    user_id = session.get("user_id")  # Récupérer l'ID de l'utilisateur connecté
+    user_likes = set()
+    if user_id:
+        rows = db.execute("SELECT champi_id FROM user_likes WHERE user_id = ?", (user_id,))
+        user_likes = {row["champi_id"] for row in rows}
     
     return render_template("pages/carte_identite.html", 
         sous_titre = nom_champi, 
@@ -190,3 +196,25 @@ def update_password(): # Changer de mot de passe
     return redirect(url_for('profil'))
 
 
+@app.route("/toggle_like", methods=["POST"])
+def toggle_like():
+    user_id = session.get("user_id")
+    if not user_id:
+        return jsonify({"error": "Utilisateur non connecté"}), 401
+
+    data = request.get_json()
+    champi_id = int(data.get("champi_id"))
+
+    # Vérifier si l'utilisateur a déjà liké ce champignon
+    rows = db.execute("SELECT 1 FROM user_likes WHERE user_id = ? AND champi_id = ?", (user_id, champi_id))
+    liked = len(rows) > 0
+
+    if liked:
+        db.execute("DELETE FROM user_likes WHERE user_id = ? AND champi_id = ?", (user_id, champi_id))
+        liked = False
+    else:
+        db.execute("INSERT INTO user_likes (user_id, champi_id) VALUES (?, ?)", (user_id, champi_id))
+        liked = True
+
+    db.commit()
+    return jsonify({"liked": liked})

@@ -16,6 +16,7 @@
     /*Teintes marron*/
     --bois-de-noyer: #5c3d2e;
     --ecorce-de-chene: #3e2f1d;
+    --discrete-lamelle:#ddccae;
 }
 
 /* ----- Styles généraux ----- */
@@ -693,4 +694,281 @@ footer p {
 .footer-liens a:hover {
     color: var(--cepe-veloute);
     border-bottom: none;
+}
+
+/*ajouts lilla*/
+
+/* Profil et carrousel */
+.profil-et-carousel {
+    display: grid;
+    grid-template-columns: 1fr 2fr; /* 1 colonne pour le profil et 2 pour le carrousel */
+    gap: 2rem;
+    margin-top: 2rem;
+}
+
+.profil {
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    padding: 1rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.profil-info {
+    margin-bottom: 2rem;
+}
+
+.profil-photo img {
+    max-width: 150px;
+    border-radius: 50%;
+    margin-bottom: 1rem;
+}
+
+.profil-details h3 {
+    margin: 0;
+    font-size: 1.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.change-password {
+    padding: 1rem;
+    margin-top: 1rem;
+    background-color: var(--discrete-lamelle);
+    border: 1px solid #ddccae;
+    border-radius: 8px; 
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.change-password .form-label {
+    font-size: 0.9rem; 
+    font-weight: bold;
+    margin-bottom: 0.3rem; 
+}
+
+.change-password .form-control {
+    padding: 0.5rem; 
+    font-size: 0.875rem;
+    border-radius: 5px;
+}
+
+.change-password button {
+    font-size: 0.875rem;
+    padding: 0.5rem 1rem;
+    margin-top: 1rem; 
+}
+
+.carousel-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    padding: 1rem;
+}
+
+/* Pour centrer le carrousel et ajuster les boutons */
+.carousel {
+    width: 100%;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.carousel-inner {
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.carousel-item img {
+    border-radius: 10px;
+}
+
+/* Style pour les boutons de navigation du carrousel */
+.carousel-control-prev, .carousel-control-next {
+    z-index: 5;
+    background-color: rgba(0, 0, 0, 0.5);
+    border-radius: 50%;
+    padding: 10px;
+}
+
+.carousel-control-prev:hover, .carousel-control-next:hover {
+    background-color: rgba(0, 0, 0, 0.7);
+}
+
+/* Style général de la section À propos */
+.about-section {
+    padding: 40px 20px;
+    background-color: var(--papyrus);
+    border-radius: 8px;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    margin-bottom: 40px;
+    text-align: center;
+}
+
+/* Centrer le titre principal */
+.about-section h2 {
+    font-size: 2.5rem;
+    color: #333;
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+/* Style des sous-titres */
+.about-section h3 {
+    font-size: 2rem;
+    color: #333;
+    text-align: center;
+    margin-top: 30px;
+    margin-bottom: 20px;
+}
+
+/* Accent sur "Champiscope" */
+.about-section span {
+    color: var(--ecorce-de-chene);
+}
+
+/* Style des paragraphes */
+.about-section p {
+    font-size: 1.1rem;
+    color: var(--bois-de-noyer);
+    line-height: 1.6;
+    text-align: center;
+    margin-bottom: 20px;
+    max-width: 900px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* Style des éléments de la liste */
+.about-section ul {
+    list-style: none;
+    padding-left: 0;
+    margin-bottom: 30px;
+    text-align: center;
+}
+
+.about-section ul li {
+    font-size: 1.1rem;
+    margin-bottom: 10px;
+}
+
+.about-section ul li::before {
+    content: "•";
+    margin-right: 10px;
+    color: var(--ecorce-de-chene);
+}
+
+/* Mise en forme des membres de l'équipe */
+.about-section .team-section {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    margin-top: 40px;
+}
+
+.about-section .team-section div {
+    background-color: var(--discrete-lamelle);
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    width: 250px;
+    text-align: center;
+}
+
+.about-section .team-section div h4 {
+    font-size: 1.3rem;
+    color: #333;
+    font-weight: bold;
+}
+
+.about-section .team-section div p {
+    font-size: 1rem;
+    color: #555;
+}
+
+/* Style des liens */
+.about-section a {
+    color: var(--chapeau-d-amanite);
+    text-decoration: none;
+}
+
+.about-section a:hover {
+    text-decoration: underline;
+}
+
+/* Style des sections Sources */
+.about-section .sources-section {
+    margin-top: 40px;
+    text-align: center;
+}
+
+.about-section .sources-section h4 {
+    font-size: 1.3rem;
+    color: #333;
+    font-weight: bold;
+}
+
+.about-section .sources-section p {
+    font-size: 1rem;
+    color: #555;
+}
+
+.about-section .sources-section a {
+    color: var(--chapeau-d-amanite);
+}
+
+.about-section .sources-section a:hover {
+    text-decoration: underline;
+}
+
+/* Boîtes des éléments "Que propose Champiscope" */
+.about-section ul {
+    list-style: none;
+    padding-left: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 15px; 
+    margin-bottom: 30px;
+    align-items: center; 
+}
+.about-section ul li {
+    background-color: var(--parchemin);
+    padding: 15px;
+    border-radius: 8px;
+    width: 90%; 
+    max-width: 400px;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    font-size: 1rem; 
+    text-align: center; 
+    border: 1px solid #ddd; 
+    transition: all 0.3s ease; 
+}
+
+/* Section Sources */
+.sources-section {
+    font-size: 0.9rem;
+    line-height: 1.4;
+    max-width: 800px; 
+    margin: 0 auto; 
+}
+
+.sources-section h4 {
+    font-size: 0.7rem;
+    margin-bottom: 5px;
+}
+
+.sources-section p {
+    margin-bottom: 10px;
+}
+
+.sources-section a {
+    font-size: 0.65rem;
+    color: #555; 
+    text-decoration: none;
+}
+
+/* Liker les champis */
+#like-icon {
+    width: 40px;
+    height: 40px;
+    cursor: pointer;
 }
