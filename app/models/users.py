@@ -9,7 +9,8 @@ class User(UserMixin, db.Model):
     pseudo = db.Column(db.String(25), unique=True)
     password = db.Column(db.String(250))
     mail = db.Column(db.String(25), unique=True)
-    profile_image = db.Column(db.String(120), default="champi_1.jpg") 
+    profile_image = db.Column(db.String(120), default="champi_1.jpg")
+    champi_id = db.Column(db.Integer, db.ForeignKey('referentiel.taxref_id'))
 
     def __repr__(self):
         return '<User %r>' % (self.id)

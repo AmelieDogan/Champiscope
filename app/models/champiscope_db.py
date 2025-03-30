@@ -87,6 +87,7 @@ class Referentiel(db.Model):
     habitats = db.relationship("Habitat", backref="habitats", lazy=True)
     iconographies = db.relationship("Iconographie", backref="iconographies", lazy=True)
     liste_rouges = db.relationship("ListeRouge", backref="liste_rouges", lazy=True)
+    champi_users = db.relationship("User", backref="champi_users", lazy=True)
     likers = db.relationship('User', secondary=user_likes, backref=db.backref('user_likes', lazy='dynamic'))
 
     confusions = db.relationship(
@@ -164,7 +165,6 @@ class ModeInsertion(db.Model):
     __tablename__="mode_insertion"
     id = db.Column(db.Integer, primary_key = True, unique=True)
     mode_insertion = db.Column(db.String(250))
-
 
     #Relation entre mode insertion et referentiel via insertion pied chapeau
     referentiels = db.relationship("Referentiel", secondary=insertion_pied_chapeau, backref="modes_insertion_associés")
