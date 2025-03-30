@@ -77,6 +77,72 @@
         {% endif %}
     </div>
 </section>
+<input type="hidden" id="csrf_token" name="csrf_token" value="{{ csrf_token() }}">
+<button id="delete-account-btn" class="btn btn-danger">Supprimer mon compte</button>
+
+<!-- Boîte de dialogue de confirmation (cachée) -->
+<div id="confirm-delete" style="display: none;">
+    <p>Êtes-vous sûr de vouloir supprimer votre compte ?</p>
+    <button id="confirm-yes" class="btn btn-danger">Oui</button>
+    <button id="confirm-no" class="btn btn-secondary">Non</button>
+</div>
+    
+</div>
+<script>
+   document.addEventListener("DOMContentLoaded", function() {
+    // Récupération des éléments HTML
+    const deleteBtn = document.getElementById("delete-account-btn");
+    const confirmBox = document.getElementById("confirm-delete");
+    const confirmYes = document.getElementById("confirm-yes");
+    const confirmNo = document.getElementById("confirm-no");
+
+    // Afficher la boîte de confirmation quand on clique sur "Supprimer mon compte"
+    deleteBtn.addEventListener("click", function() {
+        confirmBox.style.display = "block";
+    });
+
+    // Cacher la boîte si l'utilisateur clique sur "Non"
+    confirmNo.addEventListener("click", function() {
+        confirmBox.style.display = "none";
+    });
+
+    // Si l'utilisateur clique sur "Oui", envoyer la requête de suppression
+    confirmYes.addEventListener("click", function() {
+        // Récupération du token CSRF depuis un champ caché
+        const token = document.querySelector('input[name="csrf_token"]').value;
+        
+        fetch("/supprimer_compte", { 
+            method: "POST",
+            headers: { 
+                "Content-Type": "application/json",
+                "X-CSRF-Token": token
+            },
+            body: JSON.stringify({})  // Pas de données supplémentaires envoyées, juste un POST
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Erreur réseau: ' + response.status);
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data.success) {
+                alert("Compte supprimé avec succès.");
+                window.location.href = "/";  // Redirige vers l'accueil
+            } else {
+                alert("Erreur lors de la suppression du compte: " + (data.error || "Erreur inconnue"));
+            }
+        })
+        .catch(error => {
+            console.error("Erreur :", error);
+            alert("Une erreur est survenue lors de la suppression du compte.");
+        });
+    });
+});
+
+</script>
+
+
 {% endblock %}
 
 
