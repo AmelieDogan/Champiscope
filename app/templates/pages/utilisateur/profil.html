@@ -6,8 +6,10 @@
         <h2>Mon profil</h2>
         <div class="profil-info">
             <div class="profil-photo">
-                <img src="{{ url_for('static', filename='img/' + (current_user.profile_image if current_user.profile_image else 'champi_1.jpg')) }}"
-                    alt="Photo de profil" style="max-width: 150px;">
+                <img src="{{ url_for('static', filename='img/' + (current_user.profile_image if current_user.profile_image else 'champi_1.jpg')) }}" 
+                     alt="Photo de profil" style="max-width: 150px;">
+                <a href="{{ url_for('update_profile_image') }}" class="btn bouton-changer-image-profil">Changer ma photo de profil</a>
+
             </div>
             <div class="profil-details">
                 <h3>{{ current_user.pseudo }}</h3>
