@@ -9,10 +9,16 @@ window.onload = function() {
 };
 
 async function sendAnswer(answer) {
+    // Récupérer le token CSRF depuis la balise <meta>
+    const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute("content");
+
     // Envoyer la réponse et les données d'état au serveur
     const response = await fetch("/next_question", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { 
+            "Content-Type": "application/json",
+            "X-CSRFToken": csrfToken  // 🔥 On ajoute le token CSRF ici
+         },
         body: JSON.stringify({ 
             answer: answer,
             question_index: currentQuestionIndex,
@@ -52,20 +58,8 @@ async function sendAnswer(answer) {
             <div class="description-container">
                 <p>${data.description}</p>
             </div>
+            <p>Voir la <a href="/carte_identite/${data.taxref_id}">fiche de mon champignon</a></p>
             <button class="restart-button" onclick="location.reload()">Refaire le quiz</button>
         `;
     }
 }
-
-document.addEventListener('DOMContentLoaded', function() {
-    // Fonction pour plier/déplier les sections de filtres
-    const filterHeaders = document.querySelectorAll('.filtre-section h4');
-    
-    filterHeaders.forEach(header => {
-        header.addEventListener('click', function() {
-            const options = this.nextElementSibling;
-            options.style.display = options.style.display === 'none' ? 'block' : 'none';
-            this.classList.toggle('collapsed');
-        });
-    });
-});

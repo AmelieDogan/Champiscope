@@ -1,6 +1,6 @@
 from ..app import app, db
 from flask import Flask, render_template, request, jsonify
-from flask_login import current_user
+from flask_login import current_user, login_required
 from ..models.champiscope_db import Referentiel, DescriptionChampignon, Iconographie
 from ..models.users import ScoreQuizComestible
 
@@ -121,35 +121,43 @@ questions_mon_champi = [
 champignons = {
     1: {
         "nom": "Cèpe de Bordeaux (Le Sage Indépendant)",
-        "description": "Tu es comme le majestueux Cèpe de Bordeaux, une personne réfléchie et indépendante qui préfère la tranquillité des forêts profondes. Ta sagesse et ton caractère robuste t'amènent à prendre des décisions mesurées. Comme ce champignon prisé, tu préfères la solitude pour méditer, mais ta présence est toujours appréciée pour ta valeur et ta profondeur."
+        "description": "Tu es comme le majestueux Cèpe de Bordeaux, une personne réfléchie et indépendante qui préfère la tranquillité des forêts profondes. Ta sagesse et ton caractère robuste t'amènent à prendre des décisions mesurées. Comme ce champignon prisé, tu préfères la solitude pour méditer, mais ta présence est toujours appréciée pour ta valeur et ta profondeur.",
+        "taxref_id": "29388"
     },
     2: {
         "nom": "Amanite Tue-Mouches (L'Artiste Mystérieux)",
-        "description": "L'Amanite Tue-Mouches te correspond parfaitement! Créatif et excentrique, tu as une personnalité qui ne passe pas inaperçue. Tu possèdes une imagination débordante et une vision unique du monde. Comme ce champignon emblématique, tu es à la fois fascinant et imprévisible, apportant une touche de magie et d'originalité dans la vie de ceux qui te côtoient."
+        "description": "L'Amanite Tue-Mouches te correspond parfaitement! Créatif et excentrique, tu as une personnalité qui ne passe pas inaperçue. Tu possèdes une imagination débordante et une vision unique du monde. Comme ce champignon emblématique, tu es à la fois fascinant et imprévisible, apportant une touche de magie et d'originalité dans la vie de ceux qui te côtoient.",
+        "taxref_id": "39079"
     },
     3: {
-        "nom": "Morille (Le Gourmet Raffiné)",
-        "description": "Tu es semblable à la Morille, élégante et raffinée. Tu apprécies les plaisirs subtils de la vie et possèdes un goût exquis. Comme ce champignon délicat et recherché, tu te distingues par ta sophistication naturelle et ton attention aux détails. Ta présence discrète mais remarquable enrichit ton entourage d'une touche de finesse et de class."
+        "nom": "Morille conique (Le Gourmet Raffiné)",
+        "description": "Tu es semblable à la Morille, élégante et raffinée. Tu apprécies les plaisirs subtils de la vie et possèdes un goût exquis. Comme ce champignon délicat et recherché, tu te distingues par ta sophistication naturelle et ton attention aux détails. Ta présence discrète mais remarquable enrichit ton entourage d'une touche de finesse et de class.",
+        "taxref_id": "48662"
     },
     4: {
-        "nom": "Chanterelle (L'Optimiste Lumineux)",
-        "description": "La joyeuse Chanterelle te représente parfaitement! Chaleureux et sociable, tu illumines la vie de ceux qui t'entourent par ton optimisme contagieux. Comme ce champignon aux couleurs ensoleillées, tu apportes de la joie partout où tu passes. Ta nature accueillante et ta bienveillance font de toi une personne avec qui on aime passer du temps."
+        "nom": "Girolle abricot (L'Optimiste Lumineux)",
+        "description": "La joyeuse Girolle te représente parfaitement! Chaleureux et sociable, tu illumines la vie de ceux qui t'entourent par ton optimisme contagieux. Comme ce champignon aux couleurs ensoleillées, tu apportes de la joie partout où tu passes. Ta nature accueillante et ta bienveillance font de toi une personne avec qui on aime passer du temps.",
+        "taxref_id": "29920"
     },
     5: {
         "nom": "Coprin Chevelu (Le Savant Excentrique)",
-        "description": "Tu ressembles au fascinant Coprin Chevelu, intelligent et spontané. Tu as l'esprit vif et une curiosité insatiable. Comme ce champignon à la croissance rapide et à l'apparence unique, tu te distingues par ton originalité et ta capacité à réagir promptement. Ta présence dynamique et ton intelligence font de toi quelqu'un de captivant."
+        "description": "Tu ressembles au fascinant Coprin Chevelu, intelligent et spontané. Tu as l'esprit vif et une curiosité insatiable. Comme ce champignon à la croissance rapide et à l'apparence unique, tu te distingues par ton originalité et ta capacité à réagir promptement. Ta présence dynamique et ton intelligence font de toi quelqu'un de captivant.",
+        "taxref_id": "37248"
     },
     6: {
         "nom": "Truffe Noire (Le Secret Précieux)",
-        "description": "La mystérieuse Truffe Noire te correspond bien. Discret mais intense, tu préfères rester en retrait tout en ayant un impact profond sur ton entourage. Comme ce champignon rare et précieux, ta valeur est inestimable pour ceux qui ont la chance de te connaître véritablement. Tu caches une richesse intérieure qui ne se révèle qu'aux personnes les plus attentives."
+        "description": "La mystérieuse Truffe Noire te correspond bien. Discret mais intense, tu préfères rester en retrait tout en ayant un impact profond sur ton entourage. Comme ce champignon rare et précieux, ta valeur est inestimable pour ceux qui ont la chance de te connaître véritablement. Tu caches une richesse intérieure qui ne se révèle qu'aux personnes les plus attentives.",
+        "taxref_id": "50200"
     },
     7: {
-        "nom": "Girolle (L'Aventurier Enthousiaste)",
-        "description": "Tu es comme la Girolle, curieux et dynamique! Ton esprit d'aventure et ton enthousiasme te poussent constamment à explorer de nouveaux horizons. À l'image de ce champignon apprécié pour sa polyvalence, tu t'adaptes facilement à différentes situations et tu es toujours prêt à découvrir de nouvelles expériences avec passion et énergie."
+        "nom": "Faux mousseron (L'Aventurier Enthousiaste)",
+        "description": "Tu es comme Faux Mousseron, curieux et dynamique! Ton esprit d'aventure et ton enthousiasme te poussent constamment à explorer de nouveaux horizons. À l'image de ce champignon apprécié pour sa polyvalence, tu t'adaptes facilement à différentes situations et tu es toujours prêt à découvrir de nouvelles expériences avec passion et énergie.",
+        "taxref_id": "31038"
     },
     8: {
         "nom": "Pied-de-Mouton (L'Ami Fidèle)",
-        "description": "Le Pied-de-Mouton te représente parfaitement. Loyal et bienveillant, tu es l'ami sur qui on peut toujours compter. Comme ce champignon robuste et rassurant, tu offres stabilité et réconfort à ton entourage. Ta présence constante et ta fiabilité font de toi un pilier essentiel dans la vie de tes proches."
+        "description": "Le Pied-de-Mouton te représente parfaitement. Loyal et bienveillant, tu es l'ami sur qui on peut toujours compter. Comme ce champignon robuste et rassurant, tu offres stabilité et réconfort à ton entourage. Ta présence constante et ta fiabilité font de toi un pilier essentiel dans la vie de tes proches.",
+        "taxref_id": "42792"
     }
 }
 
@@ -161,6 +169,7 @@ def quel_champi():
                            choices=[choice["answer"] for choice in questions_mon_champi[0]["choices"]])
 
 @app.route("/next_question", methods=["POST"])
+@login_required
 def next_question():
     data = request.get_json()
     
@@ -201,9 +210,14 @@ def next_question():
                 winner_id = champi_id
         
         winner = champignons[int(winner_id)]
+
+        current_user.champi_id = winner['taxref_id']
+        db.session.commit()
+
         return jsonify({
             "result": f"Tu es {winner['nom']} !",
-            "description": winner['description']
+            "description": winner['description'],
+            "taxref_id": winner['taxref_id']
         })
 
 if __name__ == "__main__":
@@ -264,30 +278,33 @@ def get_quiz_data():
     rd.shuffle(questions)
     
     return jsonify({"questions": questions})
-
+    
 @app.route("/quiz/comestible/save_score", methods=["POST"])
+@login_required
 def save_comestible_score():
-    user_id = db.session.get("user_id")
-    if not user_id:
-        return jsonify({"success": False, "message": "Utilisateur non connecté"}), 401
-    
-    data = request.get_json()
-    score_value = data.get("score")
-    total_questions = data.get("totalQuestions")
-    
-    # Calculer le pourcentage de réussite
-    score_percentage = (score_value / total_questions) * 100
-    
-    # Créer une nouvelle entrée de score
-    new_score = ScoreQuizComestible(
-        user_id=current_user.id,
-        score=score_percentage
-    )
-    
     try:
-        db.session.add(new_score)
+        print("Requête reçue pour enregistrer le score")
+        data = request.get_json()
+        print(f"Données reçues: {data}")
+        
+        if not data:
+            return jsonify({"success": False, "message": "Aucune donnée reçue"}), 400
+            
+        score_value = data.get("score")
+        total_questions = data.get("totalQuestions")
+        
+        print(f"Score: {score_value}/{total_questions}")
+        
+        # Calculer le pourcentage de réussite
+        score_percentage = (score_value / total_questions) * 100
+        
+        print(f"Tentative d'enregistrement du score: {score_percentage}%")
+        current_user.enregistrer_score(score_percentage)
         db.session.commit()
+        print("Score enregistré avec succès")
+        
         return jsonify({"success": True, "message": "Score enregistré avec succès!"})
     except Exception as e:
+        print(f"Erreur: {str(e)}")
         db.session.rollback()
         return jsonify({"success": False, "message": f"Erreur lors de l'enregistrement du score: {str(e)}"}), 500

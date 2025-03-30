@@ -1,20 +1,11 @@
 from ..app import app, db
-from flask import render_template, request, jsonify, flash, redirect, url_for, session
+from flask import Blueprint, render_template, request, jsonify, flash, redirect, url_for, session
 from sqlalchemy import text
 from flask_login import current_user, login_required, logout_user
 from werkzeug.security import check_password_hash, generate_password_hash
 from sqlalchemy.orm import sessionmaker
 from ..models.champiscope_db import Referentiel, Surface, Zone, Forme, Couleur, TypeLamelle, ModeInsertion, Milieu, Habitat, MoisPousse, DescriptionChampignon, ObservationHumaine
-from ..models.users import User, user_likes
-
-# Récupérer les likes de l'utilisateur
-def get_user_likes(user_id):
-    result = db.session.execute(
-        text("SELECT champi_id FROM user_likes WHERE user_id = :uid"),
-        {"uid": user_id}
-    ).fetchall()
-    return {row.champi_id for row in result}
-
+from ..models.users import User, UserLikes
 
 @app.route("/")
 def accueil():
@@ -240,7 +231,7 @@ def quiz():
 
 @app.route('/utilisateur/profil')
 def profil():
-    user_likes = get_user_likes(current_user.id)  # Récupérer champis likés pour les afficher sur le profil
+    user_likes = current_user.get_liked_champi_objects()  # Récupérer champis likés pour les afficher sur le profil
     return render_template('pages/utilisateur/profil.html', user_likes=user_likes)
 
 @app.route("/a_propos")
@@ -298,29 +289,17 @@ def update_password(): # Changer de mot de passe
     flash("Votre mot de passe a été mis à jour avec succès.", "success")
     return redirect(url_for('profil'))
 
-
-@app.route("/toggle_like", methods=["POST"])
-def toggle_like():
-    user_id = session.get("user_id")
-    if not user_id:
-        return jsonify({"error": "Utilisateur non connecté"}), 401
-
-    data = request.get_json()
-    champi_id = int(data.get("champi_id"))
-
-    # Vérifier si l'utilisateur a déjà liké ce champignon
-    rows = db.execute("SELECT 1 FROM user_likes WHERE user_id = ? AND champi_id = ?", (user_id, champi_id))
-    liked = len(rows) > 0
-
-    if liked:
-        db.execute("DELETE FROM user_likes WHERE user_id = ? AND champi_id = ?", (user_id, champi_id))
-        liked = False
-    else:
-        db.execute("INSERT INTO user_likes (user_id, champi_id) VALUES (?, ?)", (user_id, champi_id))
-        liked = True
-
-    db.commit()
-    return jsonify({"liked": liked})
+@app.route('/like/<int:champi_id>/<action>')
+@login_required
+def like_action(champi_id, action):
+    champi = Referentiel.query.filter_by(taxref_id=champi_id).first_or_404()
+    if action == 'like':
+        current_user.like_champi(champi)
+        db.session.commit()
+    if action == 'unlike':
+        current_user.unlike_champi(champi)
+        db.session.commit()
+    return redirect(request.referrer)
 
 @app.route("/supprimer_compte", methods=["POST"])
 @login_required
@@ -345,6 +324,3 @@ def supprimer_compte():
         db.session.rollback()
         print(f"Erreur lors de la suppression : {str(e)}")
         return jsonify({"success": False, "error": str(e)})
-
-
-

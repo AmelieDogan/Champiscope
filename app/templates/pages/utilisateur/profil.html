@@ -6,8 +6,8 @@
         <h2>Mon profil</h2>
         <div class="profil-info">
             <div class="profil-photo">
-                <img src="{{ url_for('static', filename='img/' + (current_user.profile_image if current_user.profile_image else 'champi_1.jpg')) }}" 
-                     alt="Photo de profil" style="max-width: 150px;">
+                <img src="{{ url_for('static', filename='img/' + (current_user.profile_image if current_user.profile_image else 'champi_1.jpg')) }}"
+                    alt="Photo de profil" style="max-width: 150px;">
             </div>
             <div class="profil-details">
                 <h3>{{ current_user.pseudo }}</h3>
@@ -20,7 +20,8 @@
                     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                     <div class="mb-3">
                         <label for="current_password" class="form-label">Mot de passe actuel</label>
-                        <input type="password" class="form-control" id="current_password" name="current_password" required>
+                        <input type="password" class="form-control" id="current_password" name="current_password"
+                            required>
                     </div>
                     <div class="mb-3">
                         <label for="new_password" class="form-label">Nouveau mot de passe</label>
@@ -28,7 +29,8 @@
                     </div>
                     <div class="mb-3">
                         <label for="confirm_password" class="form-label">Confirmer le nouveau mot de passe</label>
-                        <input type="password" class="form-control" id="confirm_password" name="confirm_password" required>
+                        <input type="password" class="form-control" id="confirm_password" name="confirm_password"
+                            required>
                     </div>
                     <button type="submit" class="btn btn-primary">Mettre à jour</button>
                 </form>
@@ -37,46 +39,58 @@
     </div>
 
     <div class="carousel-section">
-        <h3 class="mb-4">Mes champignons favoris</h3>
+        <h3>Mes champignons favoris</h3>
         {% if user_likes %}
-            <div id="carouselChampignons" class="carousel carousel-main" data-bs-ride="carousel">
-                <div class="carousel-inner">
-                    {% for i in range(0, user_likes|length, 3) %}
-                        <div class="carousel-item {% if i == 0 %}active{% endif %}">
-                            <div class="row">
-                                {% for j in range(i, i + 3) if j < user_likes|length %}
-                                    <div class="col-md-4 mb-3">
-                                        <div class="card h-100">
-                                            <img src="{{ url_for('champignon_image', image_path=user_likes[j].champignon.iconographie.image_path) }}" 
-                                                 class="card-img-top" alt="{{ user_likes[j].champignon.nom_commun }}">
-                                            <div class="card-body">
-                                                <h5 class="card-title">{{ user_likes[j].champignon.referentiel.nom_vernaculaire }}</h5>
-                                                <p class="card-text text-muted"><em>{{ user_likes[j].champignon.nom_latin }}</em></p>
-                                                <a href="{{ url_for('champignon', id=user_likes[j].champignon.id) }}" class="btn btn-outline-primary">Voir détails</a>
+            <div id="carouselChampignons" class="custom-carousel">
+                <div class="carousel-container">
+                    <div class="carousel-track">
+                        {% for i in range(0, user_likes|length, 3) %}
+                            <div class="carousel-slide {% if i == 0 %}active{% endif %}">
+                                <div class="carousel-grid">
+                                    {% for j in range(i, i + 3) if j < user_likes|length %}
+                                        {% set champi = user_likes[j] %}
+                                        <div class="carousel-item">
+                                            <div class="card">
+                                                {% if champi.iconographies and champi.iconographies|length > 0 %}
+                                                    <div class="card-image">
+                                                        <img src="{{ champi.iconographies[0].url_image }}" loading="lazy" referrerpolicy="no-referrer" alt="{{ champi.nom_vernaculaire or champi.nom }}">
+                                                    </div>
+                                                {% else %}
+                                                    <div class="card-no-image">
+                                                        <p>Pas d'image disponible</p>
+                                                    </div>
+                                                {% endif %}
+                                                <div class="card-body">
+                                                    <h5>{{ champi.nom_vernaculaire or champi.nom }}</h5>
+                                                    <p><em>{{ champi.nom_complet }}</em></p>
+                                                    <a href="{{ url_for('champi', taxref=champi.taxref_id) }}" class="card-link">Voir détails</a>
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>
-                                {% endfor %}
+                                    {% endfor %}
+                                </div>
                             </div>
-                        </div>
-                    {% endfor %}
+                        {% endfor %}
+                    </div>
                 </div>
-                <button class="carousel-control-prev" type="button" data-bs-target="#carouselChampignons" data-bs-slide="prev">
-                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                
+                <button class="carousel-control prev" type="button">
+                    <span class="prev-icon">&lsaquo;</span>
                     <span class="visually-hidden">Précédent</span>
                 </button>
-                <button class="carousel-control-next" type="button" data-bs-target="#carouselChampignons" data-bs-slide="next">
-                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                <button class="carousel-control next" type="button">
+                    <span class="next-icon">&rsaquo;</span>
                     <span class="visually-hidden">Suivant</span>
                 </button>
             </div>
         {% else %}
-            <div class="alert alert-info">
+            <div class="info-message">
                 <p>Vous n'avez pas encore de champignons favoris. Explorez notre catalogue et ajoutez des champignons à vos favoris !</p>
             </div>
         {% endif %}
     </div>
 </section>
+
 <input type="hidden" id="csrf_token" name="csrf_token" value="{{ csrf_token() }}">
 <button id="delete-account-btn" class="btn btn-danger">Supprimer mon compte</button>
 
@@ -86,63 +100,121 @@
     <button id="confirm-yes" class="btn btn-danger">Oui</button>
     <button id="confirm-no" class="btn btn-secondary">Non</button>
 </div>
-    
-</div>
+
 <script>
-   document.addEventListener("DOMContentLoaded", function() {
-    // Récupération des éléments HTML
-    const deleteBtn = document.getElementById("delete-account-btn");
-    const confirmBox = document.getElementById("confirm-delete");
-    const confirmYes = document.getElementById("confirm-yes");
-    const confirmNo = document.getElementById("confirm-no");
-
-    // Afficher la boîte de confirmation quand on clique sur "Supprimer mon compte"
-    deleteBtn.addEventListener("click", function() {
-        confirmBox.style.display = "block";
-    });
-
-    // Cacher la boîte si l'utilisateur clique sur "Non"
-    confirmNo.addEventListener("click", function() {
-        confirmBox.style.display = "none";
-    });
-
-    // Si l'utilisateur clique sur "Oui", envoyer la requête de suppression
-    confirmYes.addEventListener("click", function() {
-        // Récupération du token CSRF depuis un champ caché
-        const token = document.querySelector('input[name="csrf_token"]').value;
+    document.addEventListener("DOMContentLoaded", function () {
+        // Carousel functionality
+        const carousel = document.querySelector('.custom-carousel');
         
-        fetch("/supprimer_compte", { 
-            method: "POST",
-            headers: { 
-                "Content-Type": "application/json",
-                "X-CSRF-Token": token
-            },
-            body: JSON.stringify({})  // Pas de données supplémentaires envoyées, juste un POST
-        })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Erreur réseau: ' + response.status);
+        if (carousel) {
+            const track = carousel.querySelector('.carousel-track');
+            const slides = carousel.querySelectorAll('.carousel-slide');
+            const prevButton = carousel.querySelector('.prev');
+            const nextButton = carousel.querySelector('.next');
+            
+            if (slides.length > 0) {
+                let currentIndex = 0;
+                
+                // Set initial position
+                track.style.transform = 'translateX(0)';
+                
+                // Function to go to a specific slide
+                function goToSlide(index) {
+                    if (index < 0) {
+                        index = slides.length - 1;
+                    } else if (index >= slides.length) {
+                        index = 0;
+                    }
+                    
+                    currentIndex = index;
+                    const offset = -index * 100;
+                    track.style.transform = `translateX(${offset}%)`;
+                    
+                    // Update active class
+                    slides.forEach((slide, i) => {
+                        if (i === currentIndex) {
+                            slide.classList.add('active');
+                        } else {
+                            slide.classList.remove('active');
+                        }
+                    });
+                }
+                
+                // Event listeners for buttons
+                if (prevButton) {
+                    prevButton.addEventListener('click', () => {
+                        goToSlide(currentIndex - 1);
+                    });
+                }
+                
+                if (nextButton) {
+                    nextButton.addEventListener('click', () => {
+                        goToSlide(currentIndex + 1);
+                    });
+                }
+                
+                // Auto advance every 5 seconds
+                setInterval(() => {
+                    goToSlide(currentIndex + 1);
+                }, 5000);
             }
-            return response.json();
-        })
-        .then(data => {
-            if (data.success) {
-                alert("Compte supprimé avec succès.");
-                window.location.href = "/";  // Redirige vers l'accueil
-            } else {
-                alert("Erreur lors de la suppression du compte: " + (data.error || "Erreur inconnue"));
-            }
-        })
-        .catch(error => {
-            console.error("Erreur :", error);
-            alert("Une erreur est survenue lors de la suppression du compte.");
-        });
-    });
-});
+        }
+        
+        // Récupération des éléments HTML pour la suppression de compte
+        const deleteBtn = document.getElementById("delete-account-btn");
+        const confirmBox = document.getElementById("confirm-delete");
+        const confirmYes = document.getElementById("confirm-yes");
+        const confirmNo = document.getElementById("confirm-no");
 
+        // Afficher la boîte de confirmation quand on clique sur "Supprimer mon compte"
+        if (deleteBtn) {
+            deleteBtn.addEventListener("click", function () {
+                confirmBox.style.display = "block";
+            });
+        }
+
+        // Cacher la boîte si l'utilisateur clique sur "Non"
+        if (confirmNo) {
+            confirmNo.addEventListener("click", function () {
+                confirmBox.style.display = "none";
+            });
+        }
+
+        // Si l'utilisateur clique sur "Oui", envoyer la requête de suppression
+        if (confirmYes) {
+            confirmYes.addEventListener("click", function () {
+                // Récupération du token CSRF depuis un champ caché
+                const token = document.querySelector('input[name="csrf_token"]').value;
+
+                fetch("/supprimer_compte", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "X-CSRF-Token": token
+                    },
+                    body: JSON.stringify({})
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Erreur réseau: ' + response.status);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.success) {
+                        alert("Compte supprimé avec succès.");
+                        window.location.href = "/";  // Redirige vers l'accueil
+                    } else {
+                        alert("Erreur lors de la suppression du compte: " + (data.error || "Erreur inconnue"));
+                    }
+                })
+                .catch(error => {
+                    console.error("Erreur :", error);
+                    alert("Une erreur est survenue lors de la suppression du compte.");
+                });
+            });
+        }
+    });
 </script>
 
-
 {% endblock %}
-
-

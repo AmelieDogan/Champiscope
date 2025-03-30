@@ -6,6 +6,13 @@
 
     <h2>{{donnees.nom}}</h2>
 
+    <!-- Bouton Like -->
+    {% if current_user.has_liked_champi(donnees) %}
+        <a style="border: none;" href="{{ url_for('like_action', champi_id=donnees.taxref_id, action='unlike') }}"><img width="75px" style="background: none; border: none;" src="{{ url_for('static', filename='images/like.png')}}"/></a>
+    {% else %}
+        <a style="border: none;" href="{{ url_for('like_action', champi_id=donnees.taxref_id, action='like') }}"><img width="75px" style="background: none; border: none;" src="{{ url_for('static', filename='images/no-like.png')}}"/></a>
+    {% endif %}
+
     <!-- Section principale d'information -->
     <section class="infos-principales">
         <div class="fiche-info">
@@ -31,13 +38,6 @@
                 {% endif %}
                 {% endif %}
             </div>
-        </div>
-        <div>
-            <button class="like-button" data-champignon="{{ donnees.taxref_id }}">
-                <img class="like-icon" 
-                     src="{{ url_for('static', filename='img/' + ('like.png' if donnees.taxref_id in user_likes else 'no-like.png')) }}" 
-                     alt="Like">
-            </button>                                                                             
         </div>
         <div class="champignon-carousel">
             {% if donnees.iconographies %}
@@ -448,5 +448,45 @@
             });
         });
     });
+
+    document.addEventListener('DOMContentLoaded', function() {
+    const likeButton = document.getElementById('likeButton');
+    
+    if (likeButton) {
+        likeButton.addEventListener('click', function() {
+            const champiId = this.getAttribute('data-champi-id');
+            
+            // Envoyer une requête AJAX pour liker/unliker
+            fetch(`/like/${champiId}`, {
+                method: 'POST',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    const imgElement = likeButton.querySelector('img');
+                    const likeCount = document.getElementById('likeCount');
+                    
+                    if (data.is_liked) {
+                        // Changer l'image en "liked"
+                        imgElement.src = "{{ url_for('static', filename='images/like.png') }}";
+                        imgElement.alt = "Aimé";
+                        // Augmenter le compteur
+                        likeCount.textContent = parseInt(likeCount.textContent) + 1;
+                    } else {
+                        // Changer l'image en "not liked"
+                        imgElement.src = "{{ url_for('static', filename='images/no-like.png') }}";
+                        imgElement.alt = "Non aimé";
+                        // Diminuer le compteur
+                        likeCount.textContent = parseInt(likeCount.textContent) - 1;
+                    }
+                }
+            })
+            .catch(error => console.error('Erreur:', error));
+        });
+    }
+});
 
 </script>

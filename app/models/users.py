@@ -2,7 +2,7 @@ from ..app import app, db, login
 from sqlalchemy import func
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin
-from ..models.champiscope_db import Referentiel, user_likes
+from ..models.champiscope_db import Referentiel
 
 class User(UserMixin, db.Model):
     __tablename__ = "user"
@@ -15,8 +15,33 @@ class User(UserMixin, db.Model):
 
     quiz_comestible_scores = db.relationship("ScoreQuizComestible", backref="quiz_comestibles_scores", lazy=True)
 
-    def __repr__(self):
-        return '<User %r>' % (self.id)
+    liked = db.relationship(
+        'UserLikes',
+        foreign_keys='UserLikes.user_id',
+        backref='users', lazy='dynamic')
+
+    def like_champi(self, champi):
+        if not self.has_liked_champi(champi):
+            like = UserLikes(user_id=self.id, champi_id=champi.taxref_id)
+            db.session.add(like)
+
+    def unlike_champi(self, champi):
+        if self.has_liked_champi(champi):
+            UserLikes.query.filter_by(
+                user_id=self.id,
+                champi_id=champi.taxref_id).delete()
+
+    def has_liked_champi(self, champi):
+        return UserLikes.query.filter(
+            UserLikes.user_id == self.id,
+            UserLikes.champi_id == champi.taxref_id).count() > 0
+    
+    def get_liked_champi_objects(self):
+        return Referentiel.query.filter(Referentiel.taxref_id.in_([like.champi_id for like in self.liked])).all()
+    
+    def enregistrer_score(self, score):
+        score_quiz = ScoreQuizComestible(user_id=self.id, score=score)
+        db.session.add(score_quiz)
     
     @staticmethod
     def ajout(pseudo, password, mail): # Ajouter un nouvel utilisateur
@@ -72,6 +97,14 @@ class ScoreQuizComestible(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     score = db.Column(db.Float)
     date_quiz = db.Column(db.DateTime, server_default=func.now())
+
+    def __repr__(self):
+        return '<User %r>' % (self.id)
+
+class UserLikes(db.Model):
+    __tablename__ = 'user_likes'
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), primary_key=True)
+    champi_id = db.Column(db.Integer, db.ForeignKey('referentiel.taxref_id'), primary_key=True)
 
     def __repr__(self):
         return '<User %r>' % (self.id)

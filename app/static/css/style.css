@@ -1047,32 +1047,163 @@ footer p {
     padding: 1rem;
 }
 
-/* Pour centrer le carrousel et ajuster les boutons */
-.carousel {
-    width: 100%;
-    max-width: 800px;
-    margin: 0 auto;
-}
+/* Styles pour le carrousel personnalisé de la page profil */
 
-.carousel-inner {
-    border-radius: 10px;
+.custom-carousel {
+    position: relative;
+    width: 100%;
+    margin: 0 auto;
     overflow: hidden;
 }
 
-.carousel-item img {
-    border-radius: 10px;
+.carousel-container {
+    position: relative;
+    width: 100%;
+    overflow: hidden;
 }
 
-/* Style pour les boutons de navigation du carrousel */
-.carousel-control-prev, .carousel-control-next {
-    z-index: 5;
-    background-color: rgba(0, 0, 0, 0.5);
-    border-radius: 50%;
+.carousel-track {
+    display: flex;
+    transition: transform 0.5s ease;
+}
+
+.carousel-slide {
+    min-width: 100%;
+    box-sizing: border-box;
+}
+
+.carousel-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
     padding: 10px;
 }
 
-.carousel-control-prev:hover, .carousel-control-next:hover {
-    background-color: rgba(0, 0, 0, 0.7);
+.carousel-item {
+    box-sizing: border-box;
+}
+
+.card {
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    overflow: hidden;
+    height: 100%;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    transition: transform 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+}
+
+.card-image {
+    height: 160px;
+    overflow: hidden;
+}
+
+.card-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.card-no-image {
+    height: 160px;
+    background-color: #f5f5f5;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #777;
+}
+
+.card-body {
+    padding: 15px;
+}
+
+.card-body h5 {
+    margin-top: 0;
+    margin-bottom: 8px;
+    font-size: 16px;
+}
+
+.card-body p {
+    margin-bottom: 15px;
+    font-size: 14px;
+    color: #666;
+}
+
+.card-link {
+    display: inline-block;
+    padding: 5px 12px;
+    background-color: #4a6da7;
+    color: white;
+    text-decoration: none;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+.card-link:hover {
+    background-color: #385582;
+}
+
+.carousel-control {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 40px;
+    height: 40px;
+    background-color: rgba(0, 0, 0, 0.3);
+    border: none;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 24px;
+    cursor: pointer;
+    z-index: 2;
+}
+
+.carousel-control.prev {
+    left: 10px;
+}
+
+.carousel-control.next {
+    right: 10px;
+}
+
+.visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+/* Styles pour mobile */
+@media (max-width: 768px) {
+    .carousel-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Styles pour tablette */
+@media (min-width: 769px) and (max-width: 1024px) {
+    .carousel-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+.info-message {
+    background-color: #e6f7ff;
+    border: 1px solid #b3e0ff;
+    border-radius: 4px;
+    padding: 15px;
+    margin: 20px 0;
 }
 
 /* Style général de la section À propos */
