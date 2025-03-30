@@ -3,41 +3,39 @@
 {% block contenu %}
 <div class="index-page">
     <div class="homepage-hero">
+        <div class="hero-titre">
+            <h2>L'encyclopédie des champignons français</h2>
+            <p>Avec Champiscope explorez, apprenez et collectionnez les fiches d'identité des champignons</p>
+        </div>
         <div class="hero-content">
-            <h2>CHAMPISCOPE<br/>~<br/>L'encyclopédie des champignons français</h2>
-            <p>Explorez, apprenez et partagez vos découvertes mycologiques</p>
             <div class="hero-actions">
+                <h3>Une base de données complète</h3>
                 <a href="/recherche" class="btn btn-primary">Explorer les espèces</a>
-                <a href="/quiz/tous_les_quiz" class="btn btn-secondary">Tester mes connaissances</a>
+                <p>Explorez plus de <strong>{{ nombre_especes }}</strong> espèces référencées avec descriptions
+                    détaillées.</p>
+            </div>
+            <div class="hero-actions">
+                <h3>Cartographie</h3>
+                <p>Visualisez les observations de champignons à travers la France pour chacune des espèces. Champiscope
+                    référence {{ nombre_observations }} observations pour toutes les espèces confondues.</p>
+                <figure>
+                    <img width="700px" src="{{url_for('static', filename='images/carte_observations.png')}}" />
+                    <figcaption>Carte montrant la répartition des observations en France réalisée avec Tableau<br /><a
+                            href="https://public.tableau.com/shared/5YX2J794G?:display_count=n&:origin=viz_share_link">Lien
+                            vers la carte sur Tableau</a></figcaption>
+                </figure>
+            </div>
+            <div class="hero-actions">
+                <h3>Une expérience personnalisable</h3>
+                <a href="/utilisateur/inscription" class="btn btn-secondary">Créer votre profil</a>
+                <p>Pour savoir quel champignon correspond le mieux à ta personnalité</p>
+                <img width="400px" src="{{url_for('static', filename='images/quel_champi_es_tu.png')}}" />
+                <p>Pour tester tes connaissances en comestibilité des champignons</p>
+                <img width="300px" src="{{url_for('static', filename='images/comestible_ou_pas.png')}}" />
+                <p>Pour créer ta collection de champignons en créant ta liste de champignons préférés</p>
+                <img width="400px" src="{{url_for('static', filename='images/collection_cartes.png')}}" />
             </div>
         </div>
     </div>
-
-    <section class="features">
-        <div class="feature">
-            <i class="icon-map"></i>
-            <h3>Cartographie</h3>
-            <p>Visualisez les observations de champignons à travers la France.</p>
-        </div>
-        <div class="feature">
-            <i class="icon-book"></i>
-            <h3>Base de données complète</h3>
-            <p>Explorez plus de <strong>{{ nombre_especes }}</strong> espèces référencées avec descriptions détaillées.</p>
-        </div>
-    </section>
-
-    <section class="stats-champignons">
-        <h2>Champiscope en chiffres</h2>
-        <div class="stats-container">
-            <div class="stat">
-                <span class="stat-number">🍄 {{ nombre_especes }}</span>
-                <span class="stat-label">espèces</span>
-            </div>
-            <div class="stat">
-                <span class="stat-number">🔍 {{ nombre_observations }}</span>
-                <span class="stat-label">observations</span>
-            </div>
-        </div>
-    </section>
 </div>
 {% endblock %}
