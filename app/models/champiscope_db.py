@@ -1,11 +1,13 @@
 from ..app import app, db
 
 #Tables de relation
+
 user_likes = db.Table(
     "user_likes",
-    db.Column('champi_id', db.Integer, db.ForeignKey('referentiel.taxref_id')),
-    db.Column('user_id', db.Integer, db.ForeignKey('user.id'))
+    db.Column('user_id', db.Integer, db.ForeignKey('user.id'), primary_key=True),
+    db.Column('champi_id', db.Integer, db.ForeignKey('referentiel.taxref_id'), primary_key=True)
 )
+
 
 surface_champi = db.Table(
     "surface_champi",
@@ -89,7 +91,8 @@ class Referentiel(db.Model):
     liste_rouges = db.relationship("ListeRouge", backref="liste_rouges", lazy=True)
     champi_users = db.relationship("User", backref="champi_users", lazy=True)
     likers = db.relationship('User', secondary=user_likes, backref=db.backref('user_likes', lazy='dynamic'))
-
+    champi_users = db.relationship('User', secondary=user_likes, backref=db.backref('liked_champis', lazy='dynamic'))
+    
     confusions = db.relationship(
         'Referentiel', secondary=confusion,
         primaryjoin=(confusion.c.taxref_id == taxref_id),

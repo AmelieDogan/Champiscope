@@ -8,6 +8,8 @@
             <div class="profil-photo">
                 <img src="{{ url_for('static', filename='img/' + (current_user.profile_image if current_user.profile_image else 'champi_1.jpg')) }}" 
                      alt="Photo de profil" style="max-width: 150px;">
+                <a href="{{ url_for('update_profile_image') }}" class="btn bouton-changer-image-profil">Changer ma photo de profil</a>
+
             </div>
             <div class="profil-details">
                 <h3>{{ current_user.pseudo }}</h3>
@@ -38,21 +40,21 @@
 
     <div class="carousel-section">
         <h3 class="mb-4">Mes champignons favoris</h3>
-        {% if user_likes %}
+        {% if champignons_likes_details %}
             <div id="carouselChampignons" class="carousel carousel-main" data-bs-ride="carousel">
                 <div class="carousel-inner">
-                    {% for i in range(0, user_likes|length, 3) %}
+                    {% for i in range(0, champignons_likes_details|length, 3) %}
                         <div class="carousel-item {% if i == 0 %}active{% endif %}">
                             <div class="row">
-                                {% for j in range(i, i + 3) if j < user_likes|length %}
+                                {% for j in range(i, i + 3) if j < champignons_likes_details|length %}
                                     <div class="col-md-4 mb-3">
                                         <div class="card h-100">
-                                            <img src="{{ url_for('champignon_image', image_path=user_likes[j].champignon.iconographie.image_path) }}" 
-                                                 class="card-img-top" alt="{{ user_likes[j].champignon.nom_commun }}">
+                                            <img src="{{ url_for('champignon_image', image_path=champignons_likes_details[j].iconographie.image_path) }}" 
+                                                 class="card-img-top" alt="{{ champignons_likes_details[j].nom_commun }}">
                                             <div class="card-body">
-                                                <h5 class="card-title">{{ user_likes[j].champignon.referentiel.nom_vernaculaire }}</h5>
-                                                <p class="card-text text-muted"><em>{{ user_likes[j].champignon.nom_latin }}</em></p>
-                                                <a href="{{ url_for('champignon', id=user_likes[j].champignon.id) }}" class="btn btn-outline-primary">Voir détails</a>
+                                                <h5 class="card-title">{{ champignons_likes_details[j].referentiel.nom_vernaculaire }}</h5>
+                                                <p class="card-text text-muted"><em>{{ champignons_likes_details[j].nom_latin }}</em></p>
+                                                <a href="{{ url_for('champignon', id=champignons_likes_details[j].id) }}" class="btn btn-outline-primary">Voir détails</a>
                                             </div>
                                         </div>
                                     </div>

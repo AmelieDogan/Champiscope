@@ -225,14 +225,26 @@ def champi(taxref):
     nom_champi = donnees.nom
 
     user_id = session.get("user_id")  # Récupérer l'ID de l'utilisateur connecté
-    user_likes = set()
-    if user_id:
-        rows = db.execute("SELECT champi_id FROM user_likes WHERE user_id = ?", (user_id,))
-        user_likes = {row["champi_id"] for row in rows}
+    # user_likes = set()
+    # if user_id:
+    #     rows = db.execute("SELECT champi_id FROM user_likes WHERE user_id = ?", (user_id,))
+    #     user_likes = {row["champi_id"] for row in rows}
+
+    user_likes_list = []
+    if current_user.is_authenticated:
+        likes_query = db.session.query(user_likes.c.champi_id).filter(
+            user_likes.c.user_id == current_user.id
+        ).all()
+        user_likes_list = [str(like[0]) for like in likes_query]
     
-    return render_template("pages/carte_identite.html", 
-        sous_titre = nom_champi, 
-        donnees = donnees)
+    return render_template('pages/carte_identite.html',
+                            sous_titre = nom_champi, 
+                            donnees=donnees, 
+                            user_likes=user_likes_list)
+    
+    # return render_template("pages/carte_identite.html", 
+    #     sous_titre = nom_champi, 
+    #     donnees = donnees)
 
 @app.route("/quiz/tous_les_quiz")
 def quiz():
@@ -240,8 +252,18 @@ def quiz():
 
 @app.route('/utilisateur/profil')
 def profil():
-    user_likes = get_user_likes(current_user.id)  # Récupérer champis likés pour les afficher sur le profil
-    return render_template('pages/utilisateur/profil.html', user_likes=user_likes)
+    # Récupérer les champignons likés par l'utilisateur
+    user_likes_data = db.session.query(user_likes).filter_by(user_id=current_user.id).all()
+
+    # Récupérer les détails des champignons likés
+    champignons_likes_details = []
+    for like in user_likes_data:
+        champignon = Referentiel.query.filter_by(taxref_id=like.champi_id).first()
+        if champignon:
+            champignons_likes_details.append(champignon)
+
+    # Passer les données à la template
+    return render_template('pages/utilisateur/profil.html', champignons_likes_details=champignons_likes_details, user_likes=user_likes_data)
 
 @app.route("/a_propos")
 def a_propos():
@@ -299,28 +321,40 @@ def update_password(): # Changer de mot de passe
     return redirect(url_for('profil'))
 
 
-@app.route("/toggle_like", methods=["POST"])
+@app.route('/toggle_like', methods=['POST'])
 def toggle_like():
-    user_id = session.get("user_id")
-    if not user_id:
-        return jsonify({"error": "Utilisateur non connecté"}), 401
+    if 'user_id' not in session:
+        return jsonify({'success': False, 'error': 'Utilisateur non connecté'}), 401
 
+    user_id = session['user_id']
     data = request.get_json()
-    champi_id = int(data.get("champi_id"))
+    champignon_taxref_id = data.get('taxref_id')
 
-    # Vérifier si l'utilisateur a déjà liké ce champignon
-    rows = db.execute("SELECT 1 FROM user_likes WHERE user_id = ? AND champi_id = ?", (user_id, champi_id))
-    liked = len(rows) > 0
+    if not champignon_taxref_id:
+        return jsonify({'success': False, 'error': 'ID champignon manquant'}), 400
 
-    if liked:
-        db.execute("DELETE FROM user_likes WHERE user_id = ? AND champi_id = ?", (user_id, champi_id))
+    # Trouver le champignon par taxref_id
+    champignon = Referentiel.query.filter_by(taxref_id=champignon_taxref_id).first()
+    if not champignon:
+        return jsonify({'success': False, 'error': 'Champignon introuvable'}), 404
+
+    # Vérifier si le like existe déjà
+    existing_like = db.session.query(user_likes).filter_by(user_id=user_id, champi_id=champignon.taxref_id).first()
+
+    if existing_like:
+        # Si le like existe déjà, on le supprime
+        db.session.delete(existing_like)
+        db.session.commit()
         liked = False
     else:
-        db.execute("INSERT INTO user_likes (user_id, champi_id) VALUES (?, ?)", (user_id, champi_id))
+        # Si le like n'existe pas, on l'ajoute
+        new_like = user_likes.insert().values(user_id=user_id, champi_id=champignon.taxref_id)
+        db.session.execute(new_like)
+        db.session.commit()
         liked = True
 
-    db.commit()
-    return jsonify({"liked": liked})
+    return jsonify({'success': True, 'liked': liked})
+
 
 @app.route("/supprimer_compte", methods=["POST"])
 @login_required

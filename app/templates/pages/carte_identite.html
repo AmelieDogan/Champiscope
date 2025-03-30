@@ -32,13 +32,9 @@
                 {% endif %}
             </div>
         </div>
-        <div>
-            <button class="like-button" data-champignon="{{ donnees.taxref_id }}">
-                <img class="like-icon" 
-                     src="{{ url_for('static', filename='img/' + ('like.png' if donnees.taxref_id in user_likes else 'no-like.png')) }}" 
-                     alt="Like">
-            </button>                                                                             
-        </div>
+        <div class="like-button" data-champignon="{{ donnees.taxref_id }}">
+            <button class="like-btn">J'aime</button>
+        </div>                
         <div class="champignon-carousel">
             {% if donnees.iconographies %}
             <div class="carousel-main">
@@ -406,47 +402,46 @@
         }
     });
 
-    // Liker les champignons
+    //liker les champis
+    document.addEventListener('DOMContentLoaded', function () {
+    // Sélectionner tous les boutons de like
+    document.querySelectorAll('.like-button').forEach(button => {
+        button.addEventListener('click', function () {
+            const champignonId = this.getAttribute('data-champignon');  // Récupère l'ID du champignon
+            const userId = getUserIdFromSession();  // Cette fonction doit récupérer l'ID de l'utilisateur connecté
 
-    document.addEventListener("DOMContentLoaded", function () {
-        document.querySelectorAll(".like-button").forEach(button => {
-            button.addEventListener("click", function () {
-                const champignonId = this.dataset.champignon;
-                const likeIcon = this.querySelector("img");
-                const isLiked = likeIcon.src.includes("like.png");
-
-                // Changer l'image immédiatement pour un effet visuel rapide
-                likeIcon.src = isLiked 
-                    ? "{{ url_for('static', filename='img/no-like.png') }}" 
-                    : "{{ url_for('static', filename='img/like.png') }}";
-
-                // Envoyer la requête
-                fetch("/toggle_like", {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                        "X-CSRFToken": getCookie("csrf_token")  // Si CSRF est activé
-                    },
-                    body: JSON.stringify({ taxref_id: champignonId })
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (!data.liked) {
-                        // En cas d'erreur, on remet l'icône précédente
-                        likeIcon.src = isLiked 
-                            ? "{{ url_for('static', filename='img/like.png') }}" 
-                            : "{{ url_for('static', filename='img/no-like.png') }}";
-                    }
-                })
-                .catch(error => {
-                    console.error("Erreur réseau :", error);
-                    // Si erreur réseau, revenir à l'état précédent
-                    likeIcon.src = isLiked 
-                        ? "{{ url_for('static', filename='img/like.png') }}" 
-                        : "{{ url_for('static', filename='img/no-like.png') }}";
-                });
-            });
+            // Envoie une requête POST pour ajouter le like
+            fetch('/toggle_like', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCookie('csrf_token')  // Si tu utilises CSRF
+                },
+                body: JSON.stringify({ champignon_id: champignonId, user_id: userId })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Champignon ajouté à vos likes !');
+                } else {
+                    console.error('Erreur:', data.error);
+                }
+            })
+            .catch(error => console.error('Erreur de requête:', error));
         });
     });
+});
+
+// Fonction pour récupérer un cookie (si tu utilises CSRF)
+function getCookie(name) {
+    let value = `; ${document.cookie}`;
+    let parts = value.split(`; ${name}=`);
+    if (parts.length === 2) return parts.pop().split(';').shift();
+}
+
+// Fonction pour récupérer l'ID de l'utilisateur (à définir selon ta logique)
+function getUserIdFromSession() {
+    return document.body.getAttribute('data-user-id');  // Exemple : tu peux stocker l'ID de l'utilisateur dans une balise body ou utiliser une autre méthode
+}
 
 </script>

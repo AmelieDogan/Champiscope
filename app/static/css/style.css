@@ -1253,3 +1253,20 @@ footer p {
     height: 40px;
     cursor: pointer;
 }
+
+.bouton-changer-image-profil {
+    display: inline-block;
+    padding: 5px 10px;  
+    font-size: 12px;    
+    text-align: center;
+    background-color: var(--bolet-fauve);  
+    color: white; 
+    border-radius: 3px;  
+    text-decoration: none;  
+    cursor: pointer;     
+}
+
+.bouton-changer-image-profil:hover {
+    background-color: #5a6268;  
+    border-color: #5a6268;  
+}
