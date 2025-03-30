@@ -1,4 +1,5 @@
 from ..app import app, db, login
+from sqlalchemy import func
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin
 from ..models.champiscope_db import Referentiel, user_likes
@@ -11,6 +12,8 @@ class User(UserMixin, db.Model):
     mail = db.Column(db.String(25), unique=True)
     profile_image = db.Column(db.String(120), default="champi_1.jpg")
     champi_id = db.Column(db.Integer, db.ForeignKey('referentiel.taxref_id'))
+
+    quiz_comestible_scores = db.relationship("ScoreQuizComestible", backref="quiz_comestibles_scores", lazy=True)
 
     def __repr__(self):
         return '<User %r>' % (self.id)
@@ -62,3 +65,13 @@ class User(UserMixin, db.Model):
             return None
         print(f"Utilisateur authentifié : {utilisateur.pseudo}")
         return utilisateur
+    
+class ScoreQuizComestible(db.Model):
+    __tablename__ = "score_quiz_comestible"
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    score = db.Column(db.Float)
+    date_quiz = db.Column(db.DateTime, server_default=func.now())
+
+    def __repr__(self):
+        return '<User %r>' % (self.id)

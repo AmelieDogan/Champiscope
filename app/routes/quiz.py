@@ -1,6 +1,8 @@
 from ..app import app, db
-from flask import Flask, render_template, request, session, jsonify
+from flask import Flask, render_template, request, jsonify
+from flask_login import current_user
 from ..models.champiscope_db import Referentiel, DescriptionChampignon, Iconographie
+from ..models.users import ScoreQuizComestible
 
 import random as rd
 
@@ -262,3 +264,30 @@ def get_quiz_data():
     rd.shuffle(questions)
     
     return jsonify({"questions": questions})
+
+@app.route("/quiz/comestible/save_score", methods=["POST"])
+def save_comestible_score():
+    user_id = db.session.get("user_id")
+    if not user_id:
+        return jsonify({"success": False, "message": "Utilisateur non connecté"}), 401
+    
+    data = request.get_json()
+    score_value = data.get("score")
+    total_questions = data.get("totalQuestions")
+    
+    # Calculer le pourcentage de réussite
+    score_percentage = (score_value / total_questions) * 100
+    
+    # Créer une nouvelle entrée de score
+    new_score = ScoreQuizComestible(
+        user_id=current_user.id,
+        score=score_percentage
+    )
+    
+    try:
+        db.session.add(new_score)
+        db.session.commit()
+        return jsonify({"success": True, "message": "Score enregistré avec succès!"})
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"success": False, "message": f"Erreur lors de l'enregistrement du score: {str(e)}"}), 500

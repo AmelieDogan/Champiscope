@@ -146,6 +146,64 @@ function showResults() {
         
         summaryElement.appendChild(answerItem);
     });
+    
+    // Envoyer le score au serveur
+    saveScore(score, questions.length);
+}
+
+// Fonction pour enregistrer le score dans la base de données
+async function saveScore(scoreValue, totalQuestions) {
+    try {
+        const response = await fetch("/quiz/comestible/save_score", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                score: scoreValue,
+                totalQuestions: totalQuestions
+            })
+        });
+        
+        // Vérifier si l'utilisateur a été redirigé vers la page de connexion
+        if (response.redirected || !response.ok) {
+            console.log("Utilisateur non connecté ou erreur. Score non enregistré.");
+            
+            // Informer l'utilisateur qu'il doit se connecter pour enregistrer son score
+            const loginMessage = document.createElement("div");
+            loginMessage.className = "login-required-message";
+            loginMessage.innerHTML = "Connecte-toi pour enregistrer tes scores! <a href='/utilisateur/connexion'>Se connecter</a>";
+            document.getElementById("results-container").appendChild(loginMessage);
+            return;
+        }
+        
+        // S'assurer que la réponse est bien du JSON avant de la parser
+        const contentType = response.headers.get("content-type");
+        if (!contentType || !contentType.includes("application/json")) {
+            console.error("La réponse n'est pas au format JSON");
+            return;
+        }
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            // Afficher un message de confirmation
+            const savedMessage = document.createElement("div");
+            savedMessage.className = "score-saved-message";
+            savedMessage.textContent = "Score enregistré!";
+            document.getElementById("results-container").appendChild(savedMessage);
+        } else {
+            console.error("Erreur lors de l'enregistrement du score:", result.message);
+        }
+    } catch (error) {
+        console.error("Erreur lors de la communication avec le serveur:", error);
+        
+        // Afficher un message d'erreur pour l'utilisateur
+        const errorMessage = document.createElement("div");
+        errorMessage.className = "error-message";
+        errorMessage.textContent = "Impossible d'enregistrer le score. Vérifie ta connexion.";
+        document.getElementById("results-container").appendChild(errorMessage);
+    }
 }
 
 // Redémarrer le quiz
