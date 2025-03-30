@@ -1,7 +1,7 @@
 from ..app import app, db
 from flask import render_template, request, jsonify, flash, redirect, url_for, session
 from sqlalchemy import text
-from flask_login import current_user, login_required
+from flask_login import current_user, login_required, logout_user
 from werkzeug.security import check_password_hash, generate_password_hash
 from sqlalchemy.orm import sessionmaker
 from ..models.champiscope_db import Referentiel, Surface, Zone, Forme, Couleur, TypeLamelle, ModeInsertion, Milieu, Habitat, MoisPousse, DescriptionChampignon, ObservationHumaine
@@ -9,9 +9,12 @@ from ..models.users import User, user_likes
 
 # Récupérer les likes de l'utilisateur
 def get_user_likes(user_id):
-    # Récupère l'utilisateur avec son id et ses likes
-    user = User.query.get(user_id)
-    return user.likes
+    result = db.session.execute(
+        text("SELECT champi_id FROM user_likes WHERE user_id = :uid"),
+        {"uid": user_id}
+    ).fetchall()
+    return {row.champi_id for row in result}
+
 
 @app.route("/")
 def accueil():
@@ -318,3 +321,30 @@ def toggle_like():
 
     db.commit()
     return jsonify({"liked": liked})
+
+@app.route("/supprimer_compte", methods=["POST"])
+@login_required
+def supprimer_compte():
+    try:
+        print(f"Suppression du compte pour l'utilisateur {current_user.id}")
+        
+        # Suppression des likes associés
+        db.session.execute(text("DELETE FROM user_likes WHERE user_id = :uid"), {"uid": current_user.id})
+
+        # Suppression du compte utilisateur
+        db.session.execute(text("DELETE FROM user WHERE id = :uid"), {"uid": current_user.id})
+
+        db.session.commit()
+
+        # Déconnexion de l'utilisateur après suppression
+        logout_user()
+
+        return jsonify({"success": True})
+
+    except Exception as e:
+        db.session.rollback()
+        print(f"Erreur lors de la suppression : {str(e)}")
+        return jsonify({"success": False, "error": str(e)})
+
+
+
