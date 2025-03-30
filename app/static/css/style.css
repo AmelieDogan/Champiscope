@@ -1,3 +1,4 @@
+@import url('https://fonts.googleapis.com/css2?family=Pacifico&display=swap');
 :root{
     --texture-papier: url(../images/white-paperboard.png);
     /*Teintes beiges*/
@@ -1269,4 +1270,90 @@ footer p {
 .bouton-changer-image-profil:hover {
     background-color: #5a6268;  
     border-color: #5a6268;  
+}
+
+/* Page index */
+.homepage-hero {
+    text-align: center;
+    padding: 80px 20px;
+    color: white;
+}
+
+.hero-content h2 {
+    font-size: 2.5rem;
+    color: var(--ecorce-de-chene);
+    margin-bottom: 10px;
+    text-shadow: 2px 2px 4px var(--papyrus);
+}
+
+.hero-content p {
+    font-size: 1.4rem;
+    color:var(--mousse-ancienne);
+    font-family: 'Pacifico', cursive;
+}
+
+.hero-actions .btn {
+    display: inline-block;
+    margin: 10px;
+    padding: 12px 24px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.btn-primary {
+    background-color: var(--chapeau-d-amanite);
+    color: white;
+}
+
+.btn-secondary {
+    background-color: var(--chapeau-d-amanite);
+    color: white;
+}
+
+.index-page {
+    background: url('/static/img/background.svg') no-repeat center center fixed;
+    background-size: cover;
+}
+
+/* Section Features */
+.features {
+    display: flex;
+    justify-content: center;
+    gap: 40px;
+    text-align: center;
+    padding: 50px 20px;
+    background-color: var(--parchemin);
+    border-radius: 20px;
+    max-width: 700px;
+    flex-wrap: wrap;
+    margin: 0 auto;
+}
+
+.feature {
+    max-width: 350px;
+    padding: 20px;
+}
+
+.feature h3 {
+    font-size: 1.5rem;
+    color: var(--ecorce-de-chene);
+}
+
+.feature p {
+    font-size: 1rem;
+    color: var(--chapeau-d-amanite);
+}
+
+.stats-champignons {
+    text-align: center;
+    padding: 60px 20px;
+    font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: var(--foret-profonde);
+}
+
+
+.stats-champignons h2 {
+    font-family: 'Pacifico', cursive;
+    color: var(--chapeau-d-amanite)
 }

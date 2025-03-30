@@ -1,43 +1,43 @@
 {% extends "partials/conteneur.html" %}
 
-{% block contenu%}
-
-<div class="homepage-hero">
-    <div class="hero-content">
-        <h2>Champiscope<br/>~<br/>L'encyclopédie des champignons français</h2>
-        <p>Explorez, apprenez et partagez vos découvertes mycologiques</p>
-        <div class="hero-actions">
-            <a href="/recherche" class="btn">Explorer les espèces</a>
-            <a href="/quiz/tous_les_quiz" class="btn">Tester mes connaissances</a>
+{% block contenu %}
+<div class="index-page">
+    <div class="homepage-hero">
+        <div class="hero-content">
+            <h2>CHAMPISCOPE<br/>~<br/>L'encyclopédie des champignons français</h2>
+            <p>Explorez, apprenez et partagez vos découvertes mycologiques</p>
+            <div class="hero-actions">
+                <a href="/recherche" class="btn btn-primary">Explorer les espèces</a>
+                <a href="/quiz/tous_les_quiz" class="btn btn-secondary">Tester mes connaissances</a>
+            </div>
         </div>
     </div>
+
+    <section class="features">
+        <div class="feature">
+            <i class="icon-map"></i>
+            <h3>Cartographie</h3>
+            <p>Visualisez les observations de champignons à travers la France.</p>
+        </div>
+        <div class="feature">
+            <i class="icon-book"></i>
+            <h3>Base de données complète</h3>
+            <p>Explorez plus de <strong>{{ nombre_especes }}</strong> espèces référencées avec descriptions détaillées.</p>
+        </div>
+    </section>
+
+    <section class="stats-champignons">
+        <h2>Champiscope en chiffres</h2>
+        <div class="stats-container">
+            <div class="stat">
+                <span class="stat-number">🍄 {{ nombre_especes }}</span>
+                <span class="stat-label">espèces</span>
+            </div>
+            <div class="stat">
+                <span class="stat-number">🔍 {{ nombre_observations }}</span>
+                <span class="stat-label">observations</span>
+            </div>
+        </div>
+    </section>
 </div>
-
-<section class="features">
-    <div class="feature">
-        <i class="icon-map"></i>
-        <h3>Cartographie</h3>
-        <p>Visualisez les observations de champignons à travers la France</p>
-    </div>
-    <div class="feature">
-        <i class="icon-book"></i>
-        <h3>Base de données complète</h3>
-        <p>Plus de {{nombre_especes}} espèces référencées avec descriptions détaillées</p>
-    </div>
-</section>
-
-<section class="stats-champignons">
-    <h2>Champiscope en chiffres</h2>
-    <div class="stats-container">
-        <div class="stat">
-            <span class="stat-number">{{ nombre_especes }}</span>
-            <span class="stat-label">Espèces</span>
-        </div>
-        <div class="stat">
-            <span class="stat-number">{{ nombre_observations }}</span>
-            <span class="stat-label">Observations</span>
-        </div>
-    </div>
-</section>
-
-{%endblock%}
+{% endblock %}
