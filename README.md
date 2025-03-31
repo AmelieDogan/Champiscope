@@ -94,7 +94,7 @@ Les données utilisées proviennent de sources ouvertes et fiables, telles que :
    - Ajoutez-y les variables suivantes (remplacez `...` par vos propres valeurs) :  
      ```ini
      DEBUG=True  # ou False en production
-     SQLALCHEMY_DATABASE_URI=sqlite:///champiscope.db  # Exemple qui fonctionne si vous ne déplacez pas la base de données SQLite
+     SQLALCHEMY_DATABASE_URI=sqlite:///champiscologues.db  # Exemple qui fonctionne si vous ne déplacez pas la base de données SQLite
      SECRET_KEY=your_secret_key_here # Vous devez en générer une, la plus aléatoire possible, et la copier ici
      CHAMPI_PAR_PAGE=27 # Nombre de champignons par page, nous vous conseillons un multiple de trois puisque les champignons s'affichent par trois sur chaque ligne
      ```
