@@ -1,4 +1,5 @@
 from ..app import app, db
+from ..utils import champignons
 from flask import render_template, request, jsonify, flash, redirect, url_for, session
 from sqlalchemy import text
 from flask_login import current_user, login_required, logout_user
@@ -139,12 +140,12 @@ def recherche(page=1):
     # Appliquer les filtres    
     if selected_couleurs:
         champignons_query = champignons_query.join(
-            Couleur, Referentiel.couleurs_associées
+            Couleur, Referentiel.couleurs
         ).filter(Couleur.id.in_(selected_couleurs))
     
     if selected_formes:
         champignons_query = champignons_query.join(
-            Forme, Referentiel.formes_associées
+            Forme, Referentiel.formes
         ).filter(Forme.id.in_(selected_formes))
     
     if selected_lamelles:
@@ -302,12 +303,33 @@ def champi(taxref):
     zones_formes = {zone.zone: formes_par_zone(taxref, zone.id) for zone in zones_avec_formes(taxref)}
     zones_surfaces = {zone.zone: surfaces_par_zone(taxref, zone.id) for zone in zones_avec_surfaces(taxref)}
 
+    correspondance_zones = {
+        "Chapeau": ["CS", "OC"],
+        "Hyménophore": ["CI"],
+        "Pied": ["PI"],
+        "Chair": ["CH", "OF"]
+    }
+
+    donnees_par_zone = {
+        "Chapeau": {"couleurs": [], "formes": [], "surfaces": []},
+        "Hyménophore": {"couleurs": [], "formes": [], "surfaces": []},
+        "Pied": {"couleurs": [], "formes": [], "surfaces": []},
+        "Chair": {"couleurs": [], "formes": [], "surfaces": []}
+    }
+
+    for zone_nom, codes in correspondance_zones.items():
+        for code in codes:
+            donnees_par_zone[zone_nom]["couleurs"].extend(couleurs_par_zone(taxref, code))
+            donnees_par_zone[zone_nom]["formes"].extend(formes_par_zone(taxref, code))
+            donnees_par_zone[zone_nom]["surfaces"].extend(surfaces_par_zone(taxref, code))
+
     return render_template("pages/carte_identite.html", 
         sous_titre=nom_champi, 
         donnees=donnees,
         zones_couleurs=zones_couleurs,
         zones_formes=zones_formes,
-        zones_surfaces=zones_surfaces)
+        zones_surfaces=zones_surfaces,
+        donnees_par_zone=donnees_par_zone)
 
 @app.route("/quiz/tous_les_quiz")
 @login_required
@@ -325,14 +347,18 @@ def profil():
     dates = [score.date_quiz.isoformat() for score in scores_data]
 
     
-    # Récupération des informations du champignon favori
+    # Récupération des informations du champignon personnel
     champignon = Referentiel.query.filter_by(taxref_id=current_user.champi_id).first()
+
+    resultat_quiz = next((v for v in champignons.values() if v["taxref_id"] == str(champignon.taxref_id)), None)
     
-    return render_template('pages/utilisateur/profil.html', 
+    return render_template('pages/utilisateur/profil.html',
+                           sous_titre="Profil", 
                            user_likes=user_likes, 
                            scores=scores, 
                            dates=dates, 
-                           champignon=champignon)
+                           champignon=champignon,
+                           resultat_quiz=resultat_quiz)
 
 @app.route("/a_propos")
 def a_propos():

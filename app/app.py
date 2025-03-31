@@ -10,6 +10,6 @@ app.config.from_object(Config)
 db = SQLAlchemy(app) # Initialisation de la base de données
 
 login = LoginManager(app) # Initialiser le loginmanager de sqlalchemy
-csrf = CSRFProtect(app)  # Activer la protection CSRF pour les images de profil
+csrf = CSRFProtect(app)  # Activer la protection CSRF
 
 from .routes import generales, quiz, connexion, dataviz

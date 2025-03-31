@@ -12,7 +12,7 @@
                 <input class="form-check-input" type="radio" name="profile_image" id="champi1" value="champi_1.jpg"
                       {% if current_user.profile_image == 'champi_1.jpg' %}checked{% endif %} hidden>
                 <label class="form-check-label" for="champi1" onclick="selectImage('champi1')">
-                    <img src="{{ url_for('static', filename='img/champi_1.jpg') }}" alt="Champignon 1" 
+                    <img src="{{ url_for('static', filename='images/champi_1.jpg') }}" alt="Champignon 1" 
                          class="img-thumbnail profile-img" id="img_champi1">
                 </label>
             </div>
@@ -20,7 +20,7 @@
                 <input class="form-check-input" type="radio" name="profile_image" id="champi2" value="champi_2.jpg"
                       {% if current_user.profile_image == 'champi_2.jpg' %}checked{% endif %} hidden>
                 <label class="form-check-label" for="champi2" onclick="selectImage('champi2')">
-                    <img src="{{ url_for('static', filename='img/champi_2.jpg') }}" alt="Champignon 2" 
+                    <img src="{{ url_for('static', filename='images/champi_2.jpg') }}" alt="Champignon 2" 
                          class="img-thumbnail profile-img" id="img_champi2">
                 </label>
             </div>
@@ -28,7 +28,7 @@
                 <input class="form-check-input" type="radio" name="profile_image" id="champi3" value="champi_3.jpg"
                       {% if current_user.profile_image == 'champi_3.jpg' %}checked{% endif %} hidden>
                 <label class="form-check-label" for="champi3" onclick="selectImage('champi3')">
-                    <img src="{{ url_for('static', filename='img/champi_3.jpg') }}" alt="Champignon 3" 
+                    <img src="{{ url_for('static', filename='images/champi_3.jpg') }}" alt="Champignon 3" 
                          class="img-thumbnail profile-img" id="img_champi3">
                 </label>
             </div>

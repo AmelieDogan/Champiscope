@@ -16,4 +16,4 @@ class Config():
     DEBUG = to_bool(os.environ.get("DEBUG"))
     SQLALCHEMY_DATABASE_URI = os.environ.get("SQLALCHEMY_DATABASE_URI")
     SECRET_KEY = os.environ.get("SECRET_KEY")
-    CHAMPI_PAR_PAGE = int(os.environ.get("CHAMPI_PAR_PAGE", 10)) # Limiter de nombre de résultat par page à 10
+    CHAMPI_PAR_PAGE = int(os.environ.get("CHAMPI_PAR_PAGE")) # Limiter de nombre de résultat par page

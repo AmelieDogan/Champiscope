@@ -6,7 +6,7 @@
         <h2>Mon profil</h2>
         <div class="profil-info">
             <div class="profil-photo">
-                <img src="{{ url_for('static', filename='img/' + (current_user.profile_image if current_user.profile_image else 'champi_1.jpg')) }}"
+                <img src="{{ url_for('static', filename='images/' + (current_user.profile_image if current_user.profile_image else 'champi_1.jpg')) }}"
                     alt="Photo de profil" style="max-width: 150px;">
                 <a class="btn" href="{{ url_for('update_profile_image') }}" class="btn bouton-changer-image-profil">Changer ma photo
                     de profil</a>
@@ -47,8 +47,10 @@
         <div class="carton">
             <h2>Ma personnalité mycologique</h2>
             {% if champignon %}
-            <p><strong>Nom :</strong> {{ champignon.nom }}</p>
+            <h3>{{resultat_quiz['nom']}}</h3>
+            <p><strong>Nom scientifique :</strong> {{ champignon.nom }}</p>
             <img src="{{ champignon.iconographies[0].url_image }}" alt="Image de {{ champignon.nom }}" width="200">
+            <p>{{resultat_quiz['description']}}</p>
             {% else %}
             <p>Faites le quiz pour connaître le champignon qui correspond à votre personnalité.</p>
             <a href="/quiz/quel_champi_suis_je">Quel est mon champignon ?</a>
@@ -125,7 +127,7 @@
 
 <section class="carousel">
 
-    <div class="carousel-section">
+    <div>
         <h3>Mes champignons favoris</h3>
         {% if user_likes %}
         <div id="carouselChampignons" class="custom-carousel">

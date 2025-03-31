@@ -1,0 +1,31 @@
+{% if zone.couleurs or zone.formes or zone.surfaces %}
+<div class="details-zone">
+    {% if zone.couleurs %}
+    <p><strong>Couleurs :</strong>
+    <p>
+    <ul>
+        {% for couleur in zone.couleurs %}
+        <li>{{ couleur.couleur }}</li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+
+    {% if zone.formes %}
+    <p><strong>Formes :</strong></p>
+    <ul>
+        {% for forme in zone.formes %}
+        <li>{{ forme.forme }}</li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+
+    {% if zone.surfaces %}
+    <p><strong>Surfaces :</strong></p>
+    <ul>
+        {% for surface in zone.surfaces %}
+        <li>{{ surface.surface }}</li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+</div>
+{% endif %}

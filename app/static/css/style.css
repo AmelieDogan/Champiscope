@@ -1117,17 +1117,11 @@ footer p {
     margin-top: 20px; 
 }
 
-.carousel-section {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    border: 1px solid #ccc;
-    border-radius: 10px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    padding: 1rem;
-}
-
 /* Styles pour le carrousel personnalisé de la page profil */
+
+.carousel {
+    margin: 50px;
+}
 
 .custom-carousel {
     position: relative;

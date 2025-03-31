@@ -130,6 +130,7 @@
         {% if donnees.description_champignons %}
         {% set desc = donnees.description_champignons[0] %}
         <div class="caracteristiques">
+            <!-- Chapeau -->
             <div class="chapeau carton">
                 <h4>Chapeau</h4>
                 {% if desc.diametre_chapeau_min and desc.diametre_chapeau_max %}
@@ -138,29 +139,27 @@
                 {% if desc.oxydation_chapeau %}
                 <p><strong>Oxydation :</strong> Oui</p>
                 {% endif %}
+                {% set zone = donnees_par_zone.Chapeau %}
+                {% include 'partials/details_zone.html' %}
             </div>
 
+            <!-- Hyménophore -->
             <div class="hymenophore carton">
-                <h4>
-                    <span class="terme-technique">
-                        Hyménophore
-                        <span class="infobulle">Partie du champignon qui porte l'hyménium, couche de cellules fertiles
-                            produisant les spores.</span>
-                    </span>
-                </h4>
+                <h4>Hyménophore</h4>
                 {% if desc.dessous_chapeau %}
                 <p><strong>Type :</strong> {{ desc.dessous_chapeau }}</p>
                 {% endif %}
-
                 {% for type_lamelle in donnees.types_lamelle_associés %}
                 <p><strong>Type de lamelles :</strong> {{ type_lamelle.type_lamelle }}</p>
                 {% endfor %}
-
                 {% if desc.espace_entre_lamelles %}
                 <p><strong>Espacement des lamelles :</strong> {{ desc.espace_entre_lamelles }}</p>
                 {% endif %}
+                {% set zone = donnees_par_zone.Hyménophore %}
+                {% include 'partials/details_zone.html' %}
             </div>
 
+            <!-- Pied -->
             <div class="pied carton">
                 <h4>Pied</h4>
                 {% if desc.pied_creux_ou_plein %}
@@ -180,8 +179,11 @@
                 {% if desc.presence_anneau %}
                 <p><strong>Anneau :</strong> Présent</p>
                 {% endif %}
+                {% set zone = donnees_par_zone.Pied %}
+                {% include 'partials/details_zone.html' %}
             </div>
 
+            <!-- Chair -->
             <div class="chair carton">
                 <h4>Chair</h4>
                 {% if desc.oxydation_chair %}
@@ -193,163 +195,111 @@
                 {% if desc.latex %}
                 <p><strong>Latex :</strong> Présent</p>
                 {% endif %}
+                {% set zone = donnees_par_zone.Chair %}
+                {% include 'partials/details_zone.html' %}
             </div>
-        </div>
-
-        <div class="caracteristiques-visuelles">
-            <!-- Couleurs -->
-            <div class="carton">
-                <h4>Couleurs</h4>
-                <div class="caracteristique-visuelle">
-                    {% for zone, couleurs in zones_couleurs.items() %}
-                    <div class="zone">
-                        <p><strong>{{ zone }} :</strong></p>
-                        <ul>
-                            {% for couleur in couleurs %}
-                            <li>{{ couleur.couleur }}</li>
-                            {% endfor %}
-                        </ul>
-                    </div>
-                    {% endfor %}
-                </div>
-            </div>
-
-            <!-- Formes -->
-            <div class="carton">
-                <h4>Formes</h4>
-                <div class="caracteristique-visuelle">
-                    {% for zone, formes in zones_formes.items() %}
-                    <div class="zone">
-                        <p><strong>{{ zone }} :</strong></p>
-                        <ul>
-                            {% for forme in formes %}
-                            <li>{{ forme.forme }}</li>
-                            {% endfor %}
-                        </ul>
-                    </div>
-                    {% endfor %}
-                </div>
-            </div>
-
-            <!-- Surfaces -->
-            <div class="carton">
-                <h4>Surfaces</h4>
-                <div class="caracteristique-visuelle">
-                    {% for zone, surfaces in zones_surfaces.items() %}
-                    <div class="zone">
-                        <p><strong>{{ zone }} :</strong></p>
-                        <ul>
-                            {% for surface in surfaces %}
-                            <li>{{ surface.surface }}</li>
-                            {% endfor %}
-                        </ul>
-                    </div>
-                    {% endfor %}
-                </div>
-            </div>
-        </div>
-</div>
-{% else %}
-<p>Aucune description disponible pour ce champignon.</p>
-{% endif %}
-</section>
-
-<!-- Section écologie et répartition -->
-<section class="ecologie-repartition">
-    <h3>Écologie et répartition</h3>
-
-    <div class="habitat-milieu carton">
-        <h4>Habitat et milieu</h4>
-        {% if donnees.habitat_id %}
-        <p><strong>Habitat :</strong> {{ donnees.habitats.definition }}</p>
-        {% endif %}
-
-        {% if donnees.milieux_associés %}
-        <table>
-            <tr>
-                <th>
-                    Milieux associés :
-                </th>
-                <td>
-                    <ul>
-                        {% for milieu in donnees.milieux_associés %}
-                        <li>{{ milieu.milieu }}</li>
-                        {% endfor %}
-                    </ul>
-                </td>
-            </tr>
-        </table>
-        {% endif %}
-
-        {% if donnees.description_champignons and donnees.description_champignons[0].pousse_sur_du_bois %}
-        <p><strong>Substrat :</strong> Pousse sur du bois</p>
-        {% endif %}
-
-        {% if donnees.description_champignons and donnees.description_champignons[0].pousse_en_touffe %}
-        <p><strong>Mode de croissance :</strong> En touffe</p>
-        {% endif %}
-    </div>
-
-    <div class="saison carton">
-        <h4>Saison de pousse</h4>
-        {% if donnees.mois_pousses %}
-        {% set mois = donnees.mois_pousses[0] %}
-        <div class="calendrier">
-            <div class="mois {% if mois.janvier %}actif{% endif %}">Jan</div>
-            <div class="mois {% if mois.fevrier %}actif{% endif %}">Fév</div>
-            <div class="mois {% if mois.mars %}actif{% endif %}">Mar</div>
-            <div class="mois {% if mois.avril %}actif{% endif %}">Avr</div>
-            <div class="mois {% if mois.mai %}actif{% endif %}">Mai</div>
-            <div class="mois {% if mois.juin %}actif{% endif %}">Jun</div>
-            <div class="mois {% if mois.juillet %}actif{% endif %}">Jul</div>
-            <div class="mois {% if mois.aout %}actif{% endif %}">Aoû</div>
-            <div class="mois {% if mois.septembre %}actif{% endif %}">Sep</div>
-            <div class="mois {% if mois.octobre %}actif{% endif %}">Oct</div>
-            <div class="mois {% if mois.novembre %}actif{% endif %}">Nov</div>
-            <div class="mois {% if mois.decembre %}actif{% endif %}">Déc</div>
         </div>
         {% else %}
-        <p>Aucune information sur la saisonnalité disponible.</p>
+        <p>Aucune description disponible pour ce champignon.</p>
         {% endif %}
-    </div>
+    </section>
 
-    <div class="distribution carton">
-        <h4>Distribution géographique</h4>
-        {% if donnees.presences %}
-        {% set presence = donnees.presences[0] %}
-        <ul class="regions">
-            {% if presence.FR %}<li>France métropolitaine</li>{% endif %}
-            {% if presence.GF %}<li>Guyane française</li>{% endif %}
-            {% if presence.MAR %}<li>Martinique</li>{% endif %}
-            {% if presence.GUA %}<li>Guadeloupe</li>{% endif %}
-            {% if presence.SM %}<li>Saint-Martin</li>{% endif %}
-            {% if presence.SB %}<li>Saint-Barthélemy</li>{% endif %}
-            {% if presence.SPM %}<li>Saint-Pierre-et-Miquelon</li>{% endif %}
-            {% if presence.MAY %}<li>Mayotte</li>{% endif %}
-            {% if presence.EPA %}<li>Îles Éparses</li>{% endif %}
-            {% if presence.REU %}<li>La Réunion</li>{% endif %}
-            {% if presence.SA %}<li>Îles subantarctiques</li>{% endif %}
-            {% if presence.TA %}<li>Terre Adélie</li>{% endif %}
-            {% if presence.PF %}<li>Polynésie française</li>{% endif %}
-            {% if presence.NC %}<li>Nouvelle-Calédonie</li>{% endif %}
-            {% if presence.WF %}<li>Wallis-et-Futuna</li>{% endif %}
-            {% if presence.CLI %}<li>Clipperton</li>{% endif %}
-        </ul>
-        {% else %}
-        <p>Aucune information sur la distribution disponible.</p>
-        {% endif %}
-    </div>
-</section>
+    <!-- Section écologie et répartition -->
+    <section class="ecologie-repartition">
+        <h3>Écologie et répartition</h3>
 
-<!-- Section avec la carte représentant les observations de ce champignon -->
-<section class="carte">
-    {% from "partials/macros.html" import carte_observations %}
+        <div class="habitat-milieu carton">
+            <h4>Habitat et milieu</h4>
+            {% if donnees.habitat_id %}
+            <p><strong>Habitat :</strong> {{ donnees.habitats.definition }}</p>
+            {% endif %}
 
-    <div class="observation-champignon">
-        <h2>Observations en France métropolitaine</h2>
-        {{ carte_observations(donnees.taxref_id) }}
-    </div>
-</section>
+            {% if donnees.milieux_associés %}
+            <table>
+                <tr>
+                    <th>
+                        Milieux associés :
+                    </th>
+                    <td>
+                        <ul>
+                            {% for milieu in donnees.milieux_associés %}
+                            <li>{{ milieu.milieu }}</li>
+                            {% endfor %}
+                        </ul>
+                    </td>
+                </tr>
+            </table>
+            {% endif %}
+
+            {% if donnees.description_champignons and donnees.description_champignons[0].pousse_sur_du_bois %}
+            <p><strong>Substrat :</strong> Pousse sur du bois</p>
+            {% endif %}
+
+            {% if donnees.description_champignons and donnees.description_champignons[0].pousse_en_touffe %}
+            <p><strong>Mode de croissance :</strong> En touffe</p>
+            {% endif %}
+        </div>
+
+        <div class="saison carton">
+            <h4>Saison de pousse</h4>
+            {% if donnees.mois_pousses %}
+            {% set mois = donnees.mois_pousses[0] %}
+            <div class="calendrier">
+                <div class="mois {% if mois.janvier %}actif{% endif %}">Jan</div>
+                <div class="mois {% if mois.fevrier %}actif{% endif %}">Fév</div>
+                <div class="mois {% if mois.mars %}actif{% endif %}">Mar</div>
+                <div class="mois {% if mois.avril %}actif{% endif %}">Avr</div>
+                <div class="mois {% if mois.mai %}actif{% endif %}">Mai</div>
+                <div class="mois {% if mois.juin %}actif{% endif %}">Jun</div>
+                <div class="mois {% if mois.juillet %}actif{% endif %}">Jul</div>
+                <div class="mois {% if mois.aout %}actif{% endif %}">Aoû</div>
+                <div class="mois {% if mois.septembre %}actif{% endif %}">Sep</div>
+                <div class="mois {% if mois.octobre %}actif{% endif %}">Oct</div>
+                <div class="mois {% if mois.novembre %}actif{% endif %}">Nov</div>
+                <div class="mois {% if mois.decembre %}actif{% endif %}">Déc</div>
+            </div>
+            {% else %}
+            <p>Aucune information sur la saisonnalité disponible.</p>
+            {% endif %}
+        </div>
+
+        <div class="distribution carton">
+            <h4>Distribution géographique</h4>
+            {% if donnees.presences %}
+            {% set presence = donnees.presences[0] %}
+            <ul class="regions">
+                {% if presence.FR %}<li>France métropolitaine</li>{% endif %}
+                {% if presence.GF %}<li>Guyane française</li>{% endif %}
+                {% if presence.MAR %}<li>Martinique</li>{% endif %}
+                {% if presence.GUA %}<li>Guadeloupe</li>{% endif %}
+                {% if presence.SM %}<li>Saint-Martin</li>{% endif %}
+                {% if presence.SB %}<li>Saint-Barthélemy</li>{% endif %}
+                {% if presence.SPM %}<li>Saint-Pierre-et-Miquelon</li>{% endif %}
+                {% if presence.MAY %}<li>Mayotte</li>{% endif %}
+                {% if presence.EPA %}<li>Îles Éparses</li>{% endif %}
+                {% if presence.REU %}<li>La Réunion</li>{% endif %}
+                {% if presence.SA %}<li>Îles subantarctiques</li>{% endif %}
+                {% if presence.TA %}<li>Terre Adélie</li>{% endif %}
+                {% if presence.PF %}<li>Polynésie française</li>{% endif %}
+                {% if presence.NC %}<li>Nouvelle-Calédonie</li>{% endif %}
+                {% if presence.WF %}<li>Wallis-et-Futuna</li>{% endif %}
+                {% if presence.CLI %}<li>Clipperton</li>{% endif %}
+            </ul>
+            {% else %}
+            <p>Aucune information sur la distribution disponible.</p>
+            {% endif %}
+        </div>
+    </section>
+
+    <!-- Section avec la carte représentant les observations de ce champignon -->
+    <section class="carte">
+        {% from "partials/macros.html" import carte_observations %}
+
+        <div class="observation-champignon">
+            <h2>Observations en France métropolitaine</h2>
+            {{ carte_observations(donnees.taxref_id) }}
+        </div>
+    </section>
 
 </div>
 
@@ -459,49 +409,6 @@
         if (thumbs.length > 0) {
             thumbs[0].classList.add('active');
         }
-    });
-
-    // Liker les champignons
-
-    document.addEventListener("DOMContentLoaded", function () {
-        document.querySelectorAll(".like-button").forEach(button => {
-            button.addEventListener("click", function () {
-                const champignonId = this.dataset.champignon;
-                const likeIcon = this.querySelector("img");
-                const isLiked = likeIcon.src.includes("like.png");
-
-                // Changer l'image immédiatement pour un effet visuel rapide
-                likeIcon.src = isLiked
-                    ? "{{ url_for('static', filename='img/no-like.png') }}"
-                    : "{{ url_for('static', filename='img/like.png') }}";
-
-                // Envoyer la requête
-                fetch("/toggle_like", {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                        "X-CSRFToken": getCookie("csrf_token")  // Si CSRF est activé
-                    },
-                    body: JSON.stringify({ taxref_id: champignonId })
-                })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (!data.liked) {
-                            // En cas d'erreur, on remet l'icône précédente
-                            likeIcon.src = isLiked
-                                ? "{{ url_for('static', filename='img/like.png') }}"
-                                : "{{ url_for('static', filename='img/no-like.png') }}";
-                        }
-                    })
-                    .catch(error => {
-                        console.error("Erreur réseau :", error);
-                        // Si erreur réseau, revenir à l'état précédent
-                        likeIcon.src = isLiked
-                            ? "{{ url_for('static', filename='img/like.png') }}"
-                            : "{{ url_for('static', filename='img/no-like.png') }}";
-                    });
-            });
-        });
     });
 
     document.addEventListener('DOMContentLoaded', function () {
