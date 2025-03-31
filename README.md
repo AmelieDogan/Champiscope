@@ -20,15 +20,15 @@ Cette application s’adresse à un public francophone, comprenant :
 
 - *Gestion des utilisateurs* :
   - Inscription, connexion, déconnexion.
-  - Gestion de profils : favoris et historique.
+  - Gestion de profils : favoris et historiques des résultats pour le quiz "Es-tu un expert en comestibilité ?".
 - *Recherche avancée* :
-  - Recherche par nom ou caractéristiques (toxicité, couleur, habitat, etc.).
+  - Recherche par nom ou caractéristiques (toxicité, couleur, milieu, saison, etc.).
   - Présentation des champignons sous forme de catalogue avec fiches d’identité détaillées.
 - *Visualisations de données* :
-  - Carte interactive des observations de champignons en France.
-  - Graphiques pour explorer les caractéristiques des espèces.
+  - Carte interactive des observations de champignons en France sur la fiche d'identité de chaque espèce.
+  - Graphiques pour explorer la comestibilité et saison de pousse.
 - *Interface utilisateur* :
-  - Design responsive adapté à tous les appareils (ordinateurs, tablettes, mobiles).
+  - Design adapté aux ordinateurs.
 
 ---
 
@@ -45,10 +45,9 @@ Les données utilisées proviennent de sources ouvertes et fiables, telles que :
 ## 🛠️ Technologies utilisées
 
 - *Back-end* : Python, Flask, SQLAlchemy, Requests.
-- *Front-end* : HTML5, CSS3, JavaScript (si nécessaire pour interactivité).
-- *Base de données* : SQL (SGBD à définir).
+- *Front-end* : HTML5, CSS3, JavaScript.
+- *Base de données* : SQL (SGBD : SQLite).
 - *Gestion des versions* : Git avec dépôt collaboratif sur GitHub.
-- *Visualisation des données* : Bibliothèques comme Plotly, D3.js ou Matplotlib.
 
 ---
 
@@ -60,24 +59,44 @@ Les données utilisées proviennent de sources ouvertes et fiables, telles que :
 - Environnement virtuel recommandé : venv.
 
 ### Installation sur Linux (avec bash)
-1. Clonez le dépôt Git :
+
+1. **Clonez le dépôt Git**  
    ```bash
-   git clone https://github.com/votre-utilisateur/champiscope.git
-   cd champiscope
+   git clone https://github.com/AmelieDogan/Champiscope.git
    ```
-2. Créez un environnement virtuel :
+
+2. **Déplacez-vous dans le répertoire du projet**  
+   ```bash
+   cd Champiscope
+   ```
+
+3. **Créez un environnement virtuel**  
    ```bash
    python -m venv env
    ```
-3. Activez votre environnement virtuel :
-    ```bash
-    source env/bin/activate
-    ```
-4. Installez les dépendances de l'application
-    ```bash
-    pip install -r requirements.txt
-    ```
-5. Lancez l'application
-    ```bash
-    python run.py
-    ```
+
+4. **Activez votre environnement virtuel**  
+   ```bash
+   source env/bin/activate
+   ```
+
+5. **Installez les dépendances de l'application**  
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+6. **Configuration des variables d’environnement**  
+   - Ouvrez votre éditeur de code préféré et créez un fichier `.env` dans le répertoire `Champiscope`.  
+   - Ajoutez-y les variables suivantes :  
+     ```ini
+     DEBUG=True  # ou False en production
+     SQLALCHEMY_DATABASE_URI=sqlite:///champiscologues.db  # Exemple qui fonctionne si vous ne déplacez pas la base de données SQLite
+     SECRET_KEY=your_secret_key_here # Vous devez en générer une, la plus aléatoire possible, et la copier ici
+     CHAMPI_PAR_PAGE=27 # Nombre de champignons par page, nous vous conseillons un multiple de trois puisque les champignons s'affichent par trois sur chaque ligne
+     ```
+
+8. **Lancer l’application**  
+   ```bash
+   python run.py
+   ```
+   Ensuite, ouvrez votre navigateur et accédez à [http://127.0.0.1:5000](http://127.0.0.1:5000).  
