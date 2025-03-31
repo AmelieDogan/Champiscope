@@ -91,7 +91,7 @@ Les données utilisées proviennent de sources ouvertes et fiables, telles que :
 
 6. **Configuration des variables d’environnement**  
    - Ouvrez votre éditeur de code préféré et créez un fichier `.env` dans le répertoire `Champiscope`.  
-   - Ajoutez-y les variables suivantes (remplacez `...` par vos propres valeurs) :  
+   - Ajoutez-y les variables suivantes :  
      ```ini
      DEBUG=True  # ou False en production
      SQLALCHEMY_DATABASE_URI=sqlite:///champiscologues.db  # Exemple qui fonctionne si vous ne déplacez pas la base de données SQLite
