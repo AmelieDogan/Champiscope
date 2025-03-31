@@ -56,30 +56,51 @@ Les données utilisées proviennent de sources ouvertes et fiables, telles que :
 ### Prérequis
 - *Python 3.9+* installé.
 - Gestionnaire de paquets *pip*.
+  Vérifiez que `pip` est à jour avant d’installer les paquets :  
+  ```bash
+  pip install --upgrade pip
+  ```
 - Environnement virtuel recommandé : venv.
 
 ### Installation sur Linux (avec bash)
-1. Clonez le dépôt Git :
+
+1. **Clonez le dépôt Git**  
    ```bash
    git clone https://github.com/AmelieDogan/Champiscope.git
    ```
-2. Déplacez-vous dans le répertoire du projet :
+
+2. **Déplacez-vous dans le répertoire du projet**  
    ```bash
    cd Champiscope
    ```
-3. Créez un environnement virtuel :
+
+3. **Créez un environnement virtuel**  
    ```bash
    python -m venv env
    ```
-4. Activez votre environnement virtuel :
-    ```bash
-    source env/bin/activate
-    ```
-5. Installez les dépendances de l'application
-    ```bash
-    pip install -r requirements.txt
-    ```
-6. Lancez l'application
-    ```bash
-    python run.py
-    ```
+
+4. **Activez votre environnement virtuel**  
+   ```bash
+   source env/bin/activate
+   ```
+
+5. **Installez les dépendances de l'application**  
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+6. **Configuration des variables d’environnement**  
+   - Ouvrez votre éditeur de code préféré et créez un fichier `.env` dans le répertoire `Champiscope`.  
+   - Ajoutez-y les variables suivantes (remplacez `...` par vos propres valeurs) :  
+     ```ini
+     DEBUG=True  # ou False en production
+     SQLALCHEMY_DATABASE_URI=sqlite:///champiscope.db  # Exemple qui fonctionne si vous ne déplacez pas la base de données SQLite
+     SECRET_KEY=your_secret_key_here # Vous devez en générer une, la plus aléatoire possible, et la copier ici
+     CHAMPI_PAR_PAGE=27 # Nombre de champignons par page, nous vous conseillons un multiple de trois puisque les champignons s'affichent par trois sur chaque ligne
+     ```
+
+8. **Lancer l’application**  
+   ```bash
+   python run.py
+   ```
+   Ensuite, ouvrez votre navigateur et accédez à [http://127.0.0.1:5000](http://127.0.0.1:5000).  
