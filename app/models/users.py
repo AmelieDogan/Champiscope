@@ -11,9 +11,7 @@ class User(UserMixin, db.Model):
     password = db.Column(db.String(250))
     mail = db.Column(db.String(25), unique=True)
     profile_image = db.Column(db.String(120), default="champi_1.jpg")
-
-    likes = db.relationship('Referentiel', secondary=user_likes, backref=db.backref('liked_by', lazy='dynamic'))
-
+    champi_id = db.Column(db.Integer, db.ForeignKey('referentiel.taxref_id'))
 
     quiz_comestible_scores = db.relationship("ScoreQuizComestible", backref="quiz_comestibles_scores", lazy=True)
 
