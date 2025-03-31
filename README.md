@@ -56,10 +56,6 @@ Les données utilisées proviennent de sources ouvertes et fiables, telles que :
 ### Prérequis
 - *Python 3.9+* installé.
 - Gestionnaire de paquets *pip*.
-  Vérifiez que `pip` est à jour avant d’installer les paquets :  
-  ```bash
-  pip install --upgrade pip
-  ```
 - Environnement virtuel recommandé : venv.
 
 ### Installation sur Linux (avec bash)
