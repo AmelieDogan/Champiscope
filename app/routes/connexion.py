@@ -24,7 +24,7 @@ def ajout_utilisateur(): # Ajouter un utilisateur
             flash(",".join(donnees), "error")
             return render_template("pages/utilisateur/ajout_utilisateur.html", form=form) # Rediriger vers page ajout utilisateur si cela n'a pas fonctionné
     else:
-        return render_template("pages/utilisateur/ajout_utilisateur.html", form=form)
+        return render_template("pages/utilisateur/ajout_utilisateur.html", sous_titre="Inscription", form=form)
 
 @app.route("/utilisateur/connexion", methods=["GET", "POST"])
 def connexion():
@@ -51,7 +51,7 @@ def connexion():
         else:
             flash("Erreur de validation du formulaire", "warning")
 
-    return render_template("pages/utilisateur/connexion.html", form=form)  # Toujours renvoyer vers la page connexion
+    return render_template("pages/utilisateur/connexion.html", sous_titre="Connexion", form=form)  # Toujours renvoyer vers la page connexion
 
     
 @app.route("/utilisateur/deconnexion", methods=["POST", "GET"])

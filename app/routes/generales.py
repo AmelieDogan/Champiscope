@@ -451,6 +451,9 @@ def supprimer_compte():
         # Suppression des likes associés
         db.session.execute(text("DELETE FROM user_likes WHERE user_id = :uid"), {"uid": current_user.id})
 
+        # Suppression des scores associés
+        db.session.execute(text("DELETE FROM score_quiz_comestible WHERE user_id = :uid"), {"uid": current_user.id})
+
         # Suppression du compte utilisateur
         db.session.execute(text("DELETE FROM user WHERE id = :uid"), {"uid": current_user.id})
 
