@@ -7,10 +7,16 @@
     <h2>{{donnees.nom}}</h2>
 
     <!-- Bouton Like -->
+    {% if current_user.is_authenticated %}
     {% if current_user.has_liked_champi(donnees) %}
-        <a style="border: none;" href="{{ url_for('like_action', champi_id=donnees.taxref_id, action='unlike') }}"><img width="75px" style="background: none; border: none;" src="{{ url_for('static', filename='images/like.png')}}"/></a>
+    <a style="border: none;" href="{{ url_for('like_action', champi_id=donnees.taxref_id, action='unlike') }}"><img
+            width="75px" style="background: none; border: none;"
+            src="{{ url_for('static', filename='images/like.png')}}" /></a>
     {% else %}
-        <a style="border: none;" href="{{ url_for('like_action', champi_id=donnees.taxref_id, action='like') }}"><img width="75px" style="background: none; border: none;" src="{{ url_for('static', filename='images/no-like.png')}}"/></a>
+    <a style="border: none;" href="{{ url_for('like_action', champi_id=donnees.taxref_id, action='like') }}"><img
+            width="75px" style="background: none; border: none;"
+            src="{{ url_for('static', filename='images/no-like.png')}}" /></a>
+    {% endif %}
     {% endif %}
 
     <!-- Section principale d'information -->
@@ -190,111 +196,160 @@
             </div>
         </div>
 
-        <div class="caracteristiques-visuelles carton">
-            <h4>Caractéristiques visuelles</h4>
-            
-        </div>
-        {% else %}
-        <p>Aucune description disponible pour ce champignon.</p>
-        {% endif %}
-    </section>
-
-    <!-- Section écologie et répartition -->
-    <section class="ecologie-repartition">
-        <h3>Écologie et répartition</h3>
-
-        <div class="habitat-milieu carton">
-            <h4>Habitat et milieu</h4>
-            {% if donnees.habitat_id %}
-            <p><strong>Habitat :</strong> {{ donnees.habitats.definition }}</p>
-            {% endif %}
-
-            {% if donnees.milieux_associés %}
-            <table>
-                <tr>
-                    <th>
-                        Milieux associés :
-                    </th>
-                    <td>
+        <div class="caracteristiques-visuelles">
+            <!-- Couleurs -->
+            <div class="carton">
+                <h4>Couleurs</h4>
+                <div class="caracteristique-visuelle">
+                    {% for zone, couleurs in zones_couleurs.items() %}
+                    <div class="zone">
+                        <p><strong>{{ zone }} :</strong></p>
                         <ul>
-                            {% for milieu in donnees.milieux_associés %}
-                            <li>{{ milieu.milieu }}</li>
+                            {% for couleur in couleurs %}
+                            <li>{{ couleur.couleur }}</li>
                             {% endfor %}
                         </ul>
-                    </td>
-                </tr>
-            </table>
-            {% endif %}
-
-            {% if donnees.description_champignons and donnees.description_champignons[0].pousse_sur_du_bois %}
-            <p><strong>Substrat :</strong> Pousse sur du bois</p>
-            {% endif %}
-
-            {% if donnees.description_champignons and donnees.description_champignons[0].pousse_en_touffe %}
-            <p><strong>Mode de croissance :</strong> En touffe</p>
-            {% endif %}
-        </div>
-
-        <div class="saison carton">
-            <h4>Saison de pousse</h4>
-            {% if donnees.mois_pousses %}
-            {% set mois = donnees.mois_pousses[0] %}
-            <div class="calendrier">
-                <div class="mois {% if mois.janvier %}actif{% endif %}">Jan</div>
-                <div class="mois {% if mois.fevrier %}actif{% endif %}">Fév</div>
-                <div class="mois {% if mois.mars %}actif{% endif %}">Mar</div>
-                <div class="mois {% if mois.avril %}actif{% endif %}">Avr</div>
-                <div class="mois {% if mois.mai %}actif{% endif %}">Mai</div>
-                <div class="mois {% if mois.juin %}actif{% endif %}">Jun</div>
-                <div class="mois {% if mois.juillet %}actif{% endif %}">Jul</div>
-                <div class="mois {% if mois.aout %}actif{% endif %}">Aoû</div>
-                <div class="mois {% if mois.septembre %}actif{% endif %}">Sep</div>
-                <div class="mois {% if mois.octobre %}actif{% endif %}">Oct</div>
-                <div class="mois {% if mois.novembre %}actif{% endif %}">Nov</div>
-                <div class="mois {% if mois.decembre %}actif{% endif %}">Déc</div>
+                    </div>
+                    {% endfor %}
+                </div>
             </div>
-            {% else %}
-            <p>Aucune information sur la saisonnalité disponible.</p>
-            {% endif %}
-        </div>
 
-        <div class="distribution carton">
-            <h4>Distribution géographique</h4>
-            {% if donnees.presences %}
-            {% set presence = donnees.presences[0] %}
-            <ul class="regions">
-                {% if presence.FR %}<li>France métropolitaine</li>{% endif %}
-                {% if presence.GF %}<li>Guyane française</li>{% endif %}
-                {% if presence.MAR %}<li>Martinique</li>{% endif %}
-                {% if presence.GUA %}<li>Guadeloupe</li>{% endif %}
-                {% if presence.SM %}<li>Saint-Martin</li>{% endif %}
-                {% if presence.SB %}<li>Saint-Barthélemy</li>{% endif %}
-                {% if presence.SPM %}<li>Saint-Pierre-et-Miquelon</li>{% endif %}
-                {% if presence.MAY %}<li>Mayotte</li>{% endif %}
-                {% if presence.EPA %}<li>Îles Éparses</li>{% endif %}
-                {% if presence.REU %}<li>La Réunion</li>{% endif %}
-                {% if presence.SA %}<li>Îles subantarctiques</li>{% endif %}
-                {% if presence.TA %}<li>Terre Adélie</li>{% endif %}
-                {% if presence.PF %}<li>Polynésie française</li>{% endif %}
-                {% if presence.NC %}<li>Nouvelle-Calédonie</li>{% endif %}
-                {% if presence.WF %}<li>Wallis-et-Futuna</li>{% endif %}
-                {% if presence.CLI %}<li>Clipperton</li>{% endif %}
-            </ul>
-            {% else %}
-            <p>Aucune information sur la distribution disponible.</p>
-            {% endif %}
-        </div>
-    </section>
+            <!-- Formes -->
+            <div class="carton">
+                <h4>Formes</h4>
+                <div class="caracteristique-visuelle">
+                    {% for zone, formes in zones_formes.items() %}
+                    <div class="zone">
+                        <p><strong>{{ zone }} :</strong></p>
+                        <ul>
+                            {% for forme in formes %}
+                            <li>{{ forme.forme }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
 
-    <!-- Section avec la carte représentant les observations de ce champignon -->
-    <section class="carte">
-        {% from "partials/macros.html" import carte_observations %}
-
-        <div class="observation-champignon">
-            <h2>Observations en France métropolitaine</h2>
-            {{ carte_observations(donnees.taxref_id) }}
+            <!-- Surfaces -->
+            <div class="carton">
+                <h4>Surfaces</h4>
+                <div class="caracteristique-visuelle">
+                    {% for zone, surfaces in zones_surfaces.items() %}
+                    <div class="zone">
+                        <p><strong>{{ zone }} :</strong></p>
+                        <ul>
+                            {% for surface in surfaces %}
+                            <li>{{ surface.surface }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
         </div>
-    </section>
+</div>
+{% else %}
+<p>Aucune description disponible pour ce champignon.</p>
+{% endif %}
+</section>
+
+<!-- Section écologie et répartition -->
+<section class="ecologie-repartition">
+    <h3>Écologie et répartition</h3>
+
+    <div class="habitat-milieu carton">
+        <h4>Habitat et milieu</h4>
+        {% if donnees.habitat_id %}
+        <p><strong>Habitat :</strong> {{ donnees.habitats.definition }}</p>
+        {% endif %}
+
+        {% if donnees.milieux_associés %}
+        <table>
+            <tr>
+                <th>
+                    Milieux associés :
+                </th>
+                <td>
+                    <ul>
+                        {% for milieu in donnees.milieux_associés %}
+                        <li>{{ milieu.milieu }}</li>
+                        {% endfor %}
+                    </ul>
+                </td>
+            </tr>
+        </table>
+        {% endif %}
+
+        {% if donnees.description_champignons and donnees.description_champignons[0].pousse_sur_du_bois %}
+        <p><strong>Substrat :</strong> Pousse sur du bois</p>
+        {% endif %}
+
+        {% if donnees.description_champignons and donnees.description_champignons[0].pousse_en_touffe %}
+        <p><strong>Mode de croissance :</strong> En touffe</p>
+        {% endif %}
+    </div>
+
+    <div class="saison carton">
+        <h4>Saison de pousse</h4>
+        {% if donnees.mois_pousses %}
+        {% set mois = donnees.mois_pousses[0] %}
+        <div class="calendrier">
+            <div class="mois {% if mois.janvier %}actif{% endif %}">Jan</div>
+            <div class="mois {% if mois.fevrier %}actif{% endif %}">Fév</div>
+            <div class="mois {% if mois.mars %}actif{% endif %}">Mar</div>
+            <div class="mois {% if mois.avril %}actif{% endif %}">Avr</div>
+            <div class="mois {% if mois.mai %}actif{% endif %}">Mai</div>
+            <div class="mois {% if mois.juin %}actif{% endif %}">Jun</div>
+            <div class="mois {% if mois.juillet %}actif{% endif %}">Jul</div>
+            <div class="mois {% if mois.aout %}actif{% endif %}">Aoû</div>
+            <div class="mois {% if mois.septembre %}actif{% endif %}">Sep</div>
+            <div class="mois {% if mois.octobre %}actif{% endif %}">Oct</div>
+            <div class="mois {% if mois.novembre %}actif{% endif %}">Nov</div>
+            <div class="mois {% if mois.decembre %}actif{% endif %}">Déc</div>
+        </div>
+        {% else %}
+        <p>Aucune information sur la saisonnalité disponible.</p>
+        {% endif %}
+    </div>
+
+    <div class="distribution carton">
+        <h4>Distribution géographique</h4>
+        {% if donnees.presences %}
+        {% set presence = donnees.presences[0] %}
+        <ul class="regions">
+            {% if presence.FR %}<li>France métropolitaine</li>{% endif %}
+            {% if presence.GF %}<li>Guyane française</li>{% endif %}
+            {% if presence.MAR %}<li>Martinique</li>{% endif %}
+            {% if presence.GUA %}<li>Guadeloupe</li>{% endif %}
+            {% if presence.SM %}<li>Saint-Martin</li>{% endif %}
+            {% if presence.SB %}<li>Saint-Barthélemy</li>{% endif %}
+            {% if presence.SPM %}<li>Saint-Pierre-et-Miquelon</li>{% endif %}
+            {% if presence.MAY %}<li>Mayotte</li>{% endif %}
+            {% if presence.EPA %}<li>Îles Éparses</li>{% endif %}
+            {% if presence.REU %}<li>La Réunion</li>{% endif %}
+            {% if presence.SA %}<li>Îles subantarctiques</li>{% endif %}
+            {% if presence.TA %}<li>Terre Adélie</li>{% endif %}
+            {% if presence.PF %}<li>Polynésie française</li>{% endif %}
+            {% if presence.NC %}<li>Nouvelle-Calédonie</li>{% endif %}
+            {% if presence.WF %}<li>Wallis-et-Futuna</li>{% endif %}
+            {% if presence.CLI %}<li>Clipperton</li>{% endif %}
+        </ul>
+        {% else %}
+        <p>Aucune information sur la distribution disponible.</p>
+        {% endif %}
+    </div>
+</section>
+
+<!-- Section avec la carte représentant les observations de ce champignon -->
+<section class="carte">
+    {% from "partials/macros.html" import carte_observations %}
+
+    <div class="observation-champignon">
+        <h2>Observations en France métropolitaine</h2>
+        {{ carte_observations(donnees.taxref_id) }}
+    </div>
+</section>
 
 </div>
 
@@ -416,8 +471,8 @@
                 const isLiked = likeIcon.src.includes("like.png");
 
                 // Changer l'image immédiatement pour un effet visuel rapide
-                likeIcon.src = isLiked 
-                    ? "{{ url_for('static', filename='img/no-like.png') }}" 
+                likeIcon.src = isLiked
+                    ? "{{ url_for('static', filename='img/no-like.png') }}"
                     : "{{ url_for('static', filename='img/like.png') }}";
 
                 // Envoyer la requête
@@ -429,64 +484,64 @@
                     },
                     body: JSON.stringify({ taxref_id: champignonId })
                 })
-                .then(response => response.json())
-                .then(data => {
-                    if (!data.liked) {
-                        // En cas d'erreur, on remet l'icône précédente
-                        likeIcon.src = isLiked 
-                            ? "{{ url_for('static', filename='img/like.png') }}" 
+                    .then(response => response.json())
+                    .then(data => {
+                        if (!data.liked) {
+                            // En cas d'erreur, on remet l'icône précédente
+                            likeIcon.src = isLiked
+                                ? "{{ url_for('static', filename='img/like.png') }}"
+                                : "{{ url_for('static', filename='img/no-like.png') }}";
+                        }
+                    })
+                    .catch(error => {
+                        console.error("Erreur réseau :", error);
+                        // Si erreur réseau, revenir à l'état précédent
+                        likeIcon.src = isLiked
+                            ? "{{ url_for('static', filename='img/like.png') }}"
                             : "{{ url_for('static', filename='img/no-like.png') }}";
-                    }
-                })
-                .catch(error => {
-                    console.error("Erreur réseau :", error);
-                    // Si erreur réseau, revenir à l'état précédent
-                    likeIcon.src = isLiked 
-                        ? "{{ url_for('static', filename='img/like.png') }}" 
-                        : "{{ url_for('static', filename='img/no-like.png') }}";
-                });
+                    });
             });
         });
     });
 
-    document.addEventListener('DOMContentLoaded', function() {
-    const likeButton = document.getElementById('likeButton');
-    
-    if (likeButton) {
-        likeButton.addEventListener('click', function() {
-            const champiId = this.getAttribute('data-champi-id');
-            
-            // Envoyer une requête AJAX pour liker/unliker
-            fetch(`/like/${champiId}`, {
-                method: 'POST',
-                headers: {
-                    'X-Requested-With': 'XMLHttpRequest'
-                }
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.status === 'success') {
-                    const imgElement = likeButton.querySelector('img');
-                    const likeCount = document.getElementById('likeCount');
-                    
-                    if (data.is_liked) {
-                        // Changer l'image en "liked"
-                        imgElement.src = "{{ url_for('static', filename='images/like.png') }}";
-                        imgElement.alt = "Aimé";
-                        // Augmenter le compteur
-                        likeCount.textContent = parseInt(likeCount.textContent) + 1;
-                    } else {
-                        // Changer l'image en "not liked"
-                        imgElement.src = "{{ url_for('static', filename='images/no-like.png') }}";
-                        imgElement.alt = "Non aimé";
-                        // Diminuer le compteur
-                        likeCount.textContent = parseInt(likeCount.textContent) - 1;
+    document.addEventListener('DOMContentLoaded', function () {
+        const likeButton = document.getElementById('likeButton');
+
+        if (likeButton) {
+            likeButton.addEventListener('click', function () {
+                const champiId = this.getAttribute('data-champi-id');
+
+                // Envoyer une requête AJAX pour liker/unliker
+                fetch(`/like/${champiId}`, {
+                    method: 'POST',
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
                     }
-                }
-            })
-            .catch(error => console.error('Erreur:', error));
-        });
-    }
-});
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.status === 'success') {
+                            const imgElement = likeButton.querySelector('img');
+                            const likeCount = document.getElementById('likeCount');
+
+                            if (data.is_liked) {
+                                // Changer l'image en "liked"
+                                imgElement.src = "{{ url_for('static', filename='images/like.png') }}";
+                                imgElement.alt = "Aimé";
+                                // Augmenter le compteur
+                                likeCount.textContent = parseInt(likeCount.textContent) + 1;
+                            } else {
+                                // Changer l'image en "not liked"
+                                imgElement.src = "{{ url_for('static', filename='images/no-like.png') }}";
+                                imgElement.alt = "Non aimé";
+                                // Diminuer le compteur
+                                likeCount.textContent = parseInt(likeCount.textContent) - 1;
+                            }
+                        }
+                    })
+                    .catch(error => console.error('Erreur:', error));
+            });
+        }
+    });
 
 </script>

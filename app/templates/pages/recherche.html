@@ -124,8 +124,7 @@
 
                 <div class="filtre-actions">
                     <button type="submit">Appliquer les filtres</button>
-                    <button type="button"
-                        onclick="window.location='{{ url_for('recherche') }}'">Réinitialiser</button>
+                    <a class="btn" href="{{ url_for('recherche') }}">Réinitialiser</a>
                 </div>
             </form>
         </div>

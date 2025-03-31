@@ -1,14 +1,15 @@
 {% extends "partials/conteneur.html" %}
 
 {% block contenu %}
-<section class="profil-et-carousel">
-    <div class="profil">
+<section class="profil-et-info-quiz">
+    <div class="carton">
         <h2>Mon profil</h2>
         <div class="profil-info">
             <div class="profil-photo">
-                <img src="{{ url_for('static', filename='img/' + (current_user.profile_image if current_user.profile_image else 'champi_1.jpg')) }}" 
-                     alt="Photo de profil" style="max-width: 150px;">
-                <a href="{{ url_for('update_profile_image') }}" class="btn bouton-changer-image-profil">Changer ma photo de profil</a>
+                <img src="{{ url_for('static', filename='img/' + (current_user.profile_image if current_user.profile_image else 'champi_1.jpg')) }}"
+                    alt="Photo de profil" style="max-width: 150px;">
+                <a class="btn" href="{{ url_for('update_profile_image') }}" class="btn bouton-changer-image-profil">Changer ma photo
+                    de profil</a>
 
             </div>
             <div class="profil-details">
@@ -16,7 +17,7 @@
                 <p><i></i> {{ current_user.mail }}</p>
                 <p><i></i> {{ user_likes|length }} champignons likés</p>
             </div>
-            <div class="change-password">
+            <div class="change-password formulaire">
                 <h3>Changer mon mot de passe</h3>
                 <form action="{{ url_for('update_password') }}" method="POST">
                     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
@@ -40,61 +41,148 @@
         </div>
     </div>
 
+    <div class="quiz-section">
+
+        <!-- Minicarte d'identité du champignon -->
+        <div class="carton">
+            <h2>Ma personnalité mycologique</h2>
+            {% if champignon %}
+            <p><strong>Nom :</strong> {{ champignon.nom }}</p>
+            <img src="{{ champignon.iconographies[0].url_image }}" alt="Image de {{ champignon.nom }}" width="200">
+            {% else %}
+            <p>Faites le quiz pour connaître le champignon qui correspond à votre personnalité.</p>
+            <a href="/quiz/quel_champi_suis_je">Quel est mon champignon ?</a>
+            {% endif %}
+        </div>
+
+        <!-- Graphique des scores -->
+        <div id="scoreContainer" data-dates='{{ dates | tojson | safe }}' data-scores='{{ scores | tojson | safe }}'>
+            <h2>Évolution des scores du quiz</h2>
+            <canvas id="scoreChart"></canvas>
+        </div>
+
+        <script>
+            // Récupération des données depuis l'attribut data- du div
+            var scoreContainer = document.getElementById('scoreContainer');
+            var dates = JSON.parse(scoreContainer.getAttribute('data-dates'));
+            var scores = JSON.parse(scoreContainer.getAttribute('data-scores'));
+
+            // Formater les dates pour inclure l'heure
+            // Vérifier et convertir les dates en format ISO
+            var formattedDates = dates.map(date => {
+                var d = new Date(date);
+
+                // Vérifier si la date est valide
+                if (isNaN(d.getTime())) {
+                    console.error("Date invalide détectée :", date);
+                    return "Date invalide";
+                }
+
+                return d.toLocaleString('fr-FR', { 
+                    day: '2-digit', month: '2-digit', year: 'numeric', 
+                    hour: '2-digit', minute: '2-digit' 
+                });
+            });
+
+            var ctx = document.getElementById('scoreChart').getContext('2d');
+            var scoreChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: formattedDates,
+                    datasets: [{
+                        label: 'Score (%)',
+                        data: scores,
+                        borderColor: '#5f573f',
+                        backgroundColor: 'rgba(95, 87, 63, 0.2)',
+                        fill: true,
+                        tension: 0.3
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            suggestedMin: 0,
+                            suggestedMax: 100
+                        }
+                    },
+                    plugins: {
+                        tooltip: {
+                            callbacks: {
+                                label: function (context) {
+                                    return 'Score : ' + context.raw + '%';
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        </script>
+
+    </div>
+
+</section>
+
+<section class="carousel">
+
     <div class="carousel-section">
         <h3>Mes champignons favoris</h3>
         {% if user_likes %}
-            <div id="carouselChampignons" class="custom-carousel">
-                <div class="carousel-container">
-                    <div class="carousel-track">
-                        {% for i in range(0, user_likes|length, 3) %}
-                            <div class="carousel-slide {% if i == 0 %}active{% endif %}">
-                                <div class="carousel-grid">
-                                    {% for j in range(i, i + 3) if j < user_likes|length %}
-                                        {% set champi = user_likes[j] %}
-                                        <div class="carousel-item">
-                                            <div class="card">
-                                                {% if champi.iconographies and champi.iconographies|length > 0 %}
-                                                    <div class="card-image">
-                                                        <img src="{{ champi.iconographies[0].url_image }}" loading="lazy" referrerpolicy="no-referrer" alt="{{ champi.nom_vernaculaire or champi.nom }}">
-                                                    </div>
-                                                {% else %}
-                                                    <div class="card-no-image">
-                                                        <p>Pas d'image disponible</p>
-                                                    </div>
-                                                {% endif %}
-                                                <div class="card-body">
-                                                    <h5>{{ champi.nom_vernaculaire or champi.nom }}</h5>
-                                                    <p><em>{{ champi.nom_complet }}</em></p>
-                                                    <a href="{{ url_for('champi', taxref=champi.taxref_id) }}" class="card-link">Voir détails</a>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    {% endfor %}
+        <div id="carouselChampignons" class="custom-carousel">
+            <div class="carousel-container">
+                <div class="carousel-track">
+                    {% for i in range(0, user_likes|length, 3) %}
+                    <div class="carousel-slide {% if i == 0 %}active{% endif %}">
+                        <div class="carousel-grid">
+                            {% for j in range(i, i + 3) if j < user_likes|length %} {% set champi=user_likes[j] %} <div
+                                class="carousel-item">
+                                <div class="card">
+                                    {% if champi.iconographies and champi.iconographies|length > 0 %}
+                                    <div class="card-image">
+                                        <img src="{{ champi.iconographies[0].url_image }}" loading="lazy"
+                                            referrerpolicy="no-referrer"
+                                            alt="{{ champi.nom_vernaculaire or champi.nom }}">
+                                    </div>
+                                    {% else %}
+                                    <div class="card-no-image">
+                                        <p>Pas d'image disponible</p>
+                                    </div>
+                                    {% endif %}
+                                    <div class="card-body">
+                                        <h5>{{ champi.nom_vernaculaire or champi.nom }}</h5>
+                                        <p><em>{{ champi.nom_complet }}</em></p>
+                                        <a href="{{ url_for('champi', taxref=champi.taxref_id) }}"
+                                            class="btn">Voir détails</a>
+                                    </div>
                                 </div>
-                            </div>
+                        </div>
                         {% endfor %}
                     </div>
                 </div>
-                
-                <button class="carousel-control prev" type="button">
-                    <span class="prev-icon">&lsaquo;</span>
-                    <span class="visually-hidden">Précédent</span>
-                </button>
-                <button class="carousel-control next" type="button">
-                    <span class="next-icon">&rsaquo;</span>
-                    <span class="visually-hidden">Suivant</span>
-                </button>
+                {% endfor %}
             </div>
-        {% else %}
-            <div class="info-message">
-                <p>Vous n'avez pas encore de champignons favoris. Explorez notre catalogue et ajoutez des champignons à vos favoris !</p>
-            </div>
-        {% endif %}
+        </div>
+
+        <button class="carousel-control prev" type="button">
+            <span class="prev-icon">&lsaquo;</span>
+            <span class="visually-hidden">Précédent</span>
+        </button>
+        <button class="carousel-control next" type="button">
+            <span class="next-icon">&rsaquo;</span>
+            <span class="visually-hidden">Suivant</span>
+        </button>
+    </div>
+    {% else %}
+    <div class="info-message">
+        <p>Vous n'avez pas encore de champignons favoris. Explorez notre catalogue et ajoutez des champignons à vos
+            favoris !</p>
+    </div>
+    {% endif %}
     </div>
 </section>
 
 <input type="hidden" id="csrf_token" name="csrf_token" value="{{ csrf_token() }}">
-<button id="delete-account-btn" class="btn btn-danger">Supprimer mon compte</button>
+<button id="delete-account-btn" class="btn btn-secondary">Supprimer mon compte</button>
 
 <!-- Boîte de dialogue de confirmation (cachée) -->
 <div id="confirm-delete" style="display: none;">
@@ -107,19 +195,19 @@
     document.addEventListener("DOMContentLoaded", function () {
         // Carousel functionality
         const carousel = document.querySelector('.custom-carousel');
-        
+
         if (carousel) {
             const track = carousel.querySelector('.carousel-track');
             const slides = carousel.querySelectorAll('.carousel-slide');
             const prevButton = carousel.querySelector('.prev');
             const nextButton = carousel.querySelector('.next');
-            
+
             if (slides.length > 0) {
                 let currentIndex = 0;
-                
+
                 // Set initial position
                 track.style.transform = 'translateX(0)';
-                
+
                 // Function to go to a specific slide
                 function goToSlide(index) {
                     if (index < 0) {
@@ -127,11 +215,11 @@
                     } else if (index >= slides.length) {
                         index = 0;
                     }
-                    
+
                     currentIndex = index;
                     const offset = -index * 100;
                     track.style.transform = `translateX(${offset}%)`;
-                    
+
                     // Update active class
                     slides.forEach((slide, i) => {
                         if (i === currentIndex) {
@@ -141,27 +229,27 @@
                         }
                     });
                 }
-                
+
                 // Event listeners for buttons
                 if (prevButton) {
                     prevButton.addEventListener('click', () => {
                         goToSlide(currentIndex - 1);
                     });
                 }
-                
+
                 if (nextButton) {
                     nextButton.addEventListener('click', () => {
                         goToSlide(currentIndex + 1);
                     });
                 }
-                
+
                 // Auto advance every 5 seconds
                 setInterval(() => {
                     goToSlide(currentIndex + 1);
                 }, 5000);
             }
         }
-        
+
         // Récupération des éléments HTML pour la suppression de compte
         const deleteBtn = document.getElementById("delete-account-btn");
         const confirmBox = document.getElementById("confirm-delete");
@@ -196,24 +284,24 @@
                     },
                     body: JSON.stringify({})
                 })
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error('Erreur réseau: ' + response.status);
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    if (data.success) {
-                        alert("Compte supprimé avec succès.");
-                        window.location.href = "/";  // Redirige vers l'accueil
-                    } else {
-                        alert("Erreur lors de la suppression du compte: " + (data.error || "Erreur inconnue"));
-                    }
-                })
-                .catch(error => {
-                    console.error("Erreur :", error);
-                    alert("Une erreur est survenue lors de la suppression du compte.");
-                });
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Erreur réseau: ' + response.status);
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        if (data.success) {
+                            alert("Compte supprimé avec succès.");
+                            window.location.href = "/";  // Redirige vers l'accueil
+                        } else {
+                            alert("Erreur lors de la suppression du compte: " + (data.error || "Erreur inconnue"));
+                        }
+                    })
+                    .catch(error => {
+                        console.error("Erreur :", error);
+                        alert("Une erreur est survenue lors de la suppression du compte.");
+                    });
             });
         }
     });

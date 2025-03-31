@@ -52,6 +52,37 @@ milieu_champi = db.Table(
 )
 
 #Classes pour tables
+
+class Surface(db.Model):
+    __tablename__="surface"
+    id = db.Column(db.Integer, primary_key = True, unique=True)
+    surface = db.Column(db.String(250))
+
+    zones = db.relationship("Zone", secondary=surface_champi, viewonly=True, backref="surfaces")
+
+    def __repr__(self):
+        return '<Surface %r>' % (self.name)
+
+class Forme(db.Model):
+    __tablename__="forme"
+    id = db.Column(db.Integer, primary_key = True, unique=True)
+    forme = db.Column(db.String(250))
+
+    zones = db.relationship("Zone", secondary=forme_champi, viewonly=True, backref="formes")
+
+    def __repr__(self):
+        return '<Forme %r>' % (self.name) 
+
+class Couleur(db.Model):
+    __tablename__="couleur"
+    id = db.Column(db.Integer, primary_key = True, unique=True)
+    couleur = db.Column(db.String(250))
+
+    zones = db.relationship("Zone", secondary=couleur_champi, viewonly=True, backref="couleurs")
+    
+    def __repr__(self):
+        return '<Couleur %r>' % (self.name)
+
 class Referentiel(db.Model):
     __tablename__="referentiel"
     taxref_id = db.Column(db.Integer, primary_key = True, unique=True)
@@ -96,53 +127,69 @@ class Referentiel(db.Model):
         secondaryjoin=(taxon_superieur.c.taxsup_id == taxref_id),
         backref=db.backref('taxon_parent_de', lazy='dynamic'), lazy='dynamic')
     
-    surfaces_associées = db.relationship("Surface", secondary=surface_champi, backref="referentiels")
-    formes_associées = db.relationship("Forme", secondary=forme_champi, backref="referentiels")
-    couleurs_associées = db.relationship("Couleur", secondary=couleur_champi, backref="referentiels")
+    # Relations surfaces, formes, couleurs
+    surfaces = db.relationship(
+        "Surface",
+        secondary=surface_champi,
+        primaryjoin=(surface_champi.c.taxref_id == taxref_id),
+        backref=db.backref("champignons", lazy="dynamic"),
+        lazy="dynamic"
+    )
+    
+    formes = db.relationship(
+        "Forme",
+        secondary=forme_champi,
+        primaryjoin=(forme_champi.c.taxref_id == taxref_id),
+        backref=db.backref("champignons", lazy="dynamic"),
+        lazy="dynamic"
+    )
+    
+    couleurs = db.relationship(
+        "Couleur",
+        secondary=couleur_champi,
+        primaryjoin=(couleur_champi.c.taxref_id == taxref_id),
+        backref=db.backref("champignons", lazy="dynamic"),
+        lazy="dynamic"
+    )
 
     def __repr__(self):
-        return '<Referentiel %r>' % (self.name) 
-
-class Surface(db.Model):
-    __tablename__="surface"
-    id = db.Column(db.Integer, primary_key = True, unique=True)
-    surface = db.Column(db.String(250))
-
-    zones = db.relationship("Zone", secondary=surface_champi, viewonly=True, backref="surfaces")
-
-    def __repr__(self):
-        return '<Surface %r>' % (self.name) 
-
+        return '<Referentiel %r>' % (self.name)
+    
 class Zone(db.Model):
     __tablename__="zone"
     id = db.Column(db.String(25), primary_key = True, unique=True)
     zone = db.Column(db.String(250))
 
-    def __lt__(self, other):
-        return self.zone < other.zone  # Comparaison basée sur le nom de la zone
+    # Relations avec champignons via différentes caractéristiques
+    champignons_avec_surface = db.relationship(
+        "Referentiel",
+        secondary=surface_champi,
+        primaryjoin=(surface_champi.c.zone_id == id),
+        secondaryjoin=(surface_champi.c.taxref_id == Referentiel.taxref_id),
+        viewonly=True,
+        lazy="dynamic"
+    )
+    
+    champignons_avec_forme = db.relationship(
+        "Referentiel",
+        secondary=forme_champi,
+        primaryjoin=(forme_champi.c.zone_id == id),
+        secondaryjoin=(forme_champi.c.taxref_id == Referentiel.taxref_id),
+        viewonly=True,
+        lazy="dynamic"
+    )
+    
+    champignons_avec_couleur = db.relationship(
+        "Referentiel",
+        secondary=couleur_champi,
+        primaryjoin=(couleur_champi.c.zone_id == id),
+        secondaryjoin=(couleur_champi.c.taxref_id == Referentiel.taxref_id),
+        viewonly=True,
+        lazy="dynamic"
+    )
 
     def __repr__(self):
         return '<Zone %r>' % (self.name) 
-
-class Forme(db.Model):
-    __tablename__="forme"
-    id = db.Column(db.Integer, primary_key = True, unique=True)
-    forme = db.Column(db.String(250))
-
-    zones = db.relationship("Zone", secondary=forme_champi, viewonly=True, backref="formes")
-
-    def __repr__(self):
-        return '<Forme %r>' % (self.name) 
-
-class Couleur(db.Model):
-    __tablename__="couleur"
-    id = db.Column(db.Integer, primary_key = True, unique=True)
-    couleur = db.Column(db.String(250))
-
-    zones = db.relationship("Zone", secondary=couleur_champi, viewonly=True, backref="couleurs")
-    
-    def __repr__(self):
-        return '<Couleur %r>' % (self.name) 
 
 class TypeLamelle(db.Model):
     __tablename__="type_lamelle"

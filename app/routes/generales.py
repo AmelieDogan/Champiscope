@@ -1,11 +1,94 @@
 from ..app import app, db
-from flask import Blueprint, render_template, request, jsonify, flash, redirect, url_for, session
+from flask import render_template, request, jsonify, flash, redirect, url_for, session
 from sqlalchemy import text
 from flask_login import current_user, login_required, logout_user
 from werkzeug.security import check_password_hash, generate_password_hash
-from sqlalchemy.orm import sessionmaker
-from ..models.champiscope_db import Referentiel, Surface, Zone, Forme, Couleur, TypeLamelle, ModeInsertion, Milieu, Habitat, MoisPousse, DescriptionChampignon, ObservationHumaine
-from ..models.users import User, UserLikes
+from ..models.champiscope_db import Referentiel, Zone, couleur_champi, surface_champi, forme_champi, Forme, Surface, Couleur, TypeLamelle, Milieu, MoisPousse, DescriptionChampignon, ObservationHumaine
+from ..models.users import ScoreQuizComestible
+
+def surfaces_par_zone(taxref, zone_id=None):
+    """Retourne les surfaces associées à ce champignon, filtré par zone si spécifiée"""
+    query = db.session.query(Surface).join(
+        surface_champi,
+        Surface.id == surface_champi.c.surface_id
+    ).filter(
+        surface_champi.c.taxref_id == taxref
+    )
+    
+    if zone_id:
+        query = query.filter(surface_champi.c.zone_id == zone_id)
+    
+    return query.all()
+
+def zones_avec_surfaces(taxref, surface_id=None):
+    """Retourne les zones de ce champignon ayant des surfaces, filtrées par surface si spécifiée"""
+    query = db.session.query(Zone).join(
+        surface_champi,
+        Zone.id == surface_champi.c.zone_id
+    ).filter(
+        surface_champi.c.taxref_id == taxref
+    )
+    
+    if surface_id:
+        query = query.filter(surface_champi.c.surface_id == surface_id)
+    
+    return query.all()
+
+def formes_par_zone(taxref, zone_id=None):
+    """Retourne les surfaces associées à ce champignon, filtré par zone si spécifiée"""
+    query = db.session.query(Forme).join(
+        forme_champi,
+        Forme.id == forme_champi.c.forme_id
+    ).filter(
+        forme_champi.c.taxref_id == taxref
+    )
+    
+    if zone_id:
+        query = query.filter(forme_champi.c.zone_id == zone_id)
+    
+    return query.all()
+
+def zones_avec_formes(taxref, forme_id=None):
+    """Retourne les zones de ce champignon ayant des surfaces, filtrées par surface si spécifiée"""
+    query = db.session.query(Zone).join(
+        forme_champi,
+        Zone.id == forme_champi.c.zone_id
+    ).filter(
+        forme_champi.c.taxref_id == taxref
+    )
+    
+    if forme_id:
+        query = query.filter(forme_champi.c.forme_id == forme_id)
+    
+    return query.all()
+
+def couleurs_par_zone(taxref, zone_id=None):
+    """Retourne les surfaces associées à ce champignon, filtré par zone si spécifiée"""
+    query = db.session.query(Couleur).join(
+        couleur_champi,
+        Couleur.id == couleur_champi.c.couleur_id
+    ).filter(
+        couleur_champi.c.taxref_id == taxref
+    )
+    
+    if zone_id:
+        query = query.filter(couleur_champi.c.zone_id == zone_id)
+    
+    return query.all()
+
+def zones_avec_couleurs(taxref, couleur_id=None):
+    """Retourne les zones de ce champignon ayant des surfaces, filtrées par surface si spécifiée"""
+    query = db.session.query(Zone).join(
+        couleur_champi,
+        Zone.id == couleur_champi.c.zone_id
+    ).filter(
+        couleur_champi.c.taxref_id == taxref
+    )
+    
+    if couleur_id:
+        query = query.filter(couleur_champi.c.couleur_id == couleur_id)
+    
+    return query.all()
 
 @app.route("/")
 def accueil():
@@ -215,24 +298,41 @@ def champi(taxref):
     
     nom_champi = donnees.nom
 
-    user_id = session.get("user_id")  # Récupérer l'ID de l'utilisateur connecté
-    user_likes = set()
-    if user_id:
-        rows = db.execute("SELECT champi_id FROM user_likes WHERE user_id = ?", (user_id,))
-        user_likes = {row["champi_id"] for row in rows}
-    
+    zones_couleurs = {zone.zone: couleurs_par_zone(taxref, zone.id) for zone in zones_avec_couleurs(taxref)}
+    zones_formes = {zone.zone: formes_par_zone(taxref, zone.id) for zone in zones_avec_formes(taxref)}
+    zones_surfaces = {zone.zone: surfaces_par_zone(taxref, zone.id) for zone in zones_avec_surfaces(taxref)}
+
     return render_template("pages/carte_identite.html", 
-        sous_titre = nom_champi, 
-        donnees = donnees)
+        sous_titre=nom_champi, 
+        donnees=donnees,
+        zones_couleurs=zones_couleurs,
+        zones_formes=zones_formes,
+        zones_surfaces=zones_surfaces)
 
 @app.route("/quiz/tous_les_quiz")
+@login_required
 def quiz():
     return render_template("pages/quiz/tous_les_quiz.html", sous_titre="Tous les quiz")
 
 @app.route('/utilisateur/profil')
+@login_required
 def profil():
-    user_likes = current_user.get_liked_champi_objects()  # Récupérer champis likés pour les afficher sur le profil
-    return render_template('pages/utilisateur/profil.html', user_likes=user_likes)
+    user_likes = current_user.get_liked_champi_objects()
+    
+    # Récupération des scores du quiz
+    scores_data = ScoreQuizComestible.query.filter_by(user_id=current_user.id).order_by(ScoreQuizComestible.date_quiz).all()
+    scores = [score.score for score in scores_data]
+    dates = [score.date_quiz.isoformat() for score in scores_data]
+
+    
+    # Récupération des informations du champignon favori
+    champignon = Referentiel.query.filter_by(taxref_id=current_user.champi_id).first()
+    
+    return render_template('pages/utilisateur/profil.html', 
+                           user_likes=user_likes, 
+                           scores=scores, 
+                           dates=dates, 
+                           champignon=champignon)
 
 @app.route("/a_propos")
 def a_propos():
@@ -247,6 +347,7 @@ def remerciements():
     return render_template("pages/remerciements.html", sous_titre="Remerciements")
 
 @app.route('/utilisateur/update_profile_image', methods=['GET', 'POST'])
+@login_required
 def update_profile_image(): # Changer de photo de profil
     if request.method == 'POST':
         # Récupérer l'image sélectionnée dans le formulaire
