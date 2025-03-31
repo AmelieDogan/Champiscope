@@ -61,7 +61,7 @@ Les données utilisées proviennent de sources ouvertes et fiables, telles que :
 ### Installation sur Linux (avec bash)
 1. Clonez le dépôt Git :
    ```bash
-   git clone [https://github.com/votre-utilisateur/champiscope.git](https://github.com/AmelieDogan/Champiscope.git)
+   git clone https://github.com/AmelieDogan/Champiscope.git
    ```
 2. Déplacez-vous dans le répertoire du projet :
    ```bash
