@@ -62,21 +62,24 @@ Les données utilisées proviennent de sources ouvertes et fiables, telles que :
 1. Clonez le dépôt Git :
    ```bash
    git clone [https://github.com/votre-utilisateur/champiscope.git](https://github.com/AmelieDogan/Champiscope.git)
+   ```
+2. Déplacez-vous dans le répertoire du projet :
+   ```bash
    cd Champiscope
    ```
-2. Créez un environnement virtuel :
+3. Créez un environnement virtuel :
    ```bash
    python -m venv env
    ```
-3. Activez votre environnement virtuel :
+4. Activez votre environnement virtuel :
     ```bash
     source env/bin/activate
     ```
-4. Installez les dépendances de l'application
+5. Installez les dépendances de l'application
     ```bash
     pip install -r requirements.txt
     ```
-5. Lancez l'application
+6. Lancez l'application
     ```bash
     python run.py
     ```
