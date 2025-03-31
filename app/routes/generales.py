@@ -91,6 +91,20 @@ def zones_avec_couleurs(taxref, couleur_id=None):
     
     return query.all()
 
+@app.errorhandler(404)
+def not_found_error(error):
+    return render_template('pages/erreurs/404.html', sous_titre='404'), 404
+
+@app.errorhandler(500)
+@app.errorhandler(503)
+def internal_error(error):
+    db.session.rollback()
+    return render_template('pages/erreurs/500.html', sous_titre='500'), 500
+
+@app.errorhandler(401)
+def custom_error_401(error):
+    return render_template('pages/erreurs/401.html', sous_titre='401'), 401
+
 @app.route("/")
 def accueil():
     # Calculer le nombre total d'espèces
