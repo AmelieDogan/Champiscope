@@ -20,15 +20,15 @@ Cette application s’adresse à un public francophone, comprenant :
 
 - *Gestion des utilisateurs* :
   - Inscription, connexion, déconnexion.
-  - Gestion de profils : favoris et historique.
+  - Gestion de profils : favoris et historiques des résultats pour le quiz "Es-tu un expert en comestibilité ?".
 - *Recherche avancée* :
-  - Recherche par nom ou caractéristiques (toxicité, couleur, habitat, etc.).
+  - Recherche par nom ou caractéristiques (toxicité, couleur, milieu, saison, etc.).
   - Présentation des champignons sous forme de catalogue avec fiches d’identité détaillées.
 - *Visualisations de données* :
-  - Carte interactive des observations de champignons en France.
-  - Graphiques pour explorer les caractéristiques des espèces.
+  - Carte interactive des observations de champignons en France sur la fiche d'identité de chaque espèce.
+  - Graphiques pour explorer la comestibilité et saison de pousse.
 - *Interface utilisateur* :
-  - Design responsive adapté à tous les appareils (ordinateurs, tablettes, mobiles).
+  - Design adapté aux ordinateurs.
 
 ---
 
@@ -45,10 +45,9 @@ Les données utilisées proviennent de sources ouvertes et fiables, telles que :
 ## 🛠️ Technologies utilisées
 
 - *Back-end* : Python, Flask, SQLAlchemy, Requests.
-- *Front-end* : HTML5, CSS3, JavaScript (si nécessaire pour interactivité).
-- *Base de données* : SQL (SGBD à définir).
+- *Front-end* : HTML5, CSS3, JavaScript.
+- *Base de données* : SQL (SGBD : SQLite).
 - *Gestion des versions* : Git avec dépôt collaboratif sur GitHub.
-- *Visualisation des données* : Bibliothèques comme Plotly, D3.js ou Matplotlib.
 
 ---
 
@@ -62,8 +61,8 @@ Les données utilisées proviennent de sources ouvertes et fiables, telles que :
 ### Installation sur Linux (avec bash)
 1. Clonez le dépôt Git :
    ```bash
-   git clone https://github.com/votre-utilisateur/champiscope.git
-   cd champiscope
+   git clone [https://github.com/votre-utilisateur/champiscope.git](https://github.com/AmelieDogan/Champiscope.git)
+   cd Champiscope
    ```
 2. Créez un environnement virtuel :
    ```bash
